@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from .models import AirTempSetpoint, WaterTempSetpoint, HumididtySetpoint
+from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
 from django.db import IntegrityError
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout

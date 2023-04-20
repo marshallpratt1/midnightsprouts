@@ -1,6 +1,6 @@
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from .models import AirTempSetpoint, WaterTempSetpoint, HumididtySetpoint
+from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
 from datetime import timedelta, datetime
 
 def update_air_temp_setpoint(setpoint):
@@ -8,7 +8,7 @@ def update_air_temp_setpoint(setpoint):
     new_setpoint.save()
 
 def update_humidity_setpoint(setpoint):
-    new_setpoint = HumididtySetpoint(humidity_setpoint=int(setpoint))
+    new_setpoint = HumiditySetpoint(humidity_setpoint=int(setpoint))
     new_setpoint.save()
 
 def update_water_temp_setpoint(setpoint):

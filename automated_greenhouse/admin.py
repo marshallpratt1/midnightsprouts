@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from .models import AirTempSetpoint, WaterTempSetpoint, HumididtySetpoint
+from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
 
 
 # Register your models here.
@@ -20,4 +20,4 @@ admin.site.register(WaterHeaterStatus)
 admin.site.register(Valve1Status)
 admin.site.register(AirTempSetpoint)
 admin.site.register(WaterTempSetpoint)
-admin.site.register(HumididtySetpoint)
+admin.site.register(HumiditySetpoint)
