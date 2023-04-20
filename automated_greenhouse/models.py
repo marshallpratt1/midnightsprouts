@@ -82,6 +82,6 @@ class WaterTempSetpoint(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
 
-class HumididtySetpoint(models.Model):
+class HumiditySetpoint(models.Model):
     humidity_setpoint = models.IntegerField(default=70)
     created_at = models.DateTimeField(auto_now=True)
