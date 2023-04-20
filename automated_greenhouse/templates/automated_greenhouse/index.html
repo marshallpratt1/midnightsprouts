@@ -1,0 +1,510 @@
+{% extends "automated_greenhouse/layout.html" %}
+{% block main %}
+    <h2>Greenhouse Monitoring and Controls</h2>
+
+    <!-- Start: System Status -->
+    <hr>
+    <h3>Systems Status: {% if automatic %} Automatic {% else %} Manual {% endif %}<br><br>
+        {% if user.is_superuser %}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#statusModal">
+                Change Status
+            </button>
+        {% endif %}
+        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ system_message }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action = "{% url 'index' %}" method="post" id = "status_form", name="status_form">
+                        {% csrf_token %}    
+                        {{ system_form }}
+                        <hr>
+                        <button class="btn btn-primary" type="submit">Yes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
+                    </form>
+                </div>                                
+            </div>
+            </div>
+        </div>
+    </h3>
+    <hr>
+    <!-- End: System Status -->
+
+    <!-- Start: Nursery Air Temp -->
+    <div class="card" style="padding: 5px;">
+        <div class="row align-items-start"  style="border: 2px;">
+                <div class="col col-md-2">  
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Nursery Air Temp: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ nursery_air_temp }}F</strong></p>
+                        <p class="lead">Outside Air Temp: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ outside_air_temp }}F</strong></p>
+                    </div>
+                </div>                
+                <div class="col col-md-2">
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Nursery Air Setpoint: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ air_temp_setpoint }}F</strong></p>
+                        {% if user.is_superuser %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#airTempModal">
+                                Change Setpoint
+                            </button>
+                        {% endif %}
+
+                        <div class="modal fade" id="airTempModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="exampleModalLabel">Change Air Temp Setpoint</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action = "{% url 'index' %}" method="post" id = "air_temp_form", name="air_temp_form">
+                                        {% csrf_token %}                
+                                        {{ air_form }}
+                                        <hr>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                    </form>
+                                </div>                                
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card" style="padding: 2px;">
+                        <div>
+                            <canvas id="tempChart"></canvas>
+                        </div>                        
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- End: Nursery Air Temp -->
+
+    <!-- Start: Nursery Humidity -->
+    <div class="card" style="padding: 5px; margin-top: 5px;">
+        <div class="row align-items-start"  style="border: 2px;">
+                <div class="col col-md-2">  
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Nursery Humidity: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ humidity }}%</strong></p>
+                    </div>
+                </div>                
+                <div class="col col-md-2">
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Humidity Setpoint: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ humidity_setpoint }}%</strong></p>
+                        {% if user.is_superuser %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#humidityModal">
+                                Change Setpoint
+                            </button>
+                        {% endif %}
+                        <div class="modal fade" id="humidityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="exampleModalLabel">Change Humidity Setpoint</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action = "{% url 'index' %}" method="post" id = "humidity_form", name="humidity_form">
+                                        {% csrf_token %}                
+                                        {{ humidity_form }}
+                                        <hr>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                    </form>
+                                </div>                                
+                              </div>
+                            </div>
+                          </div>
+
+
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card" style="padding: 2px;">
+                        <canvas id="humidityChart" style="height: 200px;"></canvas>                        
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- End: Nursery Humidity -->
+
+    <!-- Start: Water Temp -->
+    <div class="card" style="padding: 5px; margin-top: 5px;">
+        <div class="row align-items-start"  style="border: 2px;">
+                <div class="col col-md-2">  
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Water Temp: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ water_temp }}F</strong></p>
+                        <p class="lead">Water Level: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{% if water_level %} OK {% else %} LOW {% endif %}</strong></p>                    
+                    </div>
+                </div>                
+                <div class="col col-md-2">
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Water Temp Setpoint: </p>
+                        <p class="lead" style="font-size: xx-large;"><strong>{{ water_temp_setpoint }}F</strong></p>
+                        {% if user.is_superuser %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterModal">
+                                Change Setpoint
+                            </button>
+                        {% endif %}
+                        <div class="modal fade" id="waterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action = "{% url 'index' %}" method="post" id = "water_form", name="water_form">
+                                        {% csrf_token %}                
+                                        {{ water_form }}
+                                        <hr>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                    </form>
+                                </div>                                
+                              </div>
+                            </div>
+                          </div>
+
+
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card" style="padding: 2px;">
+                        <canvas id="waterTempChart" style="height: 200px;"></canvas> 
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- End: Water Temp -->
+        
+    <!-- Start: Equipment Status -->
+    <div class="card" style="padding: 5px;">
+        <div class="row align-items-start"  style="border: 2px;">
+
+            <!-- Start: Air Heater -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Nursery Heater: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if air_heater_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %}    
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nurseryHeaterModal">
+                                {% if air_heater_status %} Turn Off {% else %} Turn On {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}                    
+                    <div class="modal fade" id="nurseryHeaterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Nursery Heater:</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "nursery_heater_form", name="nursery_heater_form">
+                                    {% csrf_token %}                
+                                    {{ nursery_heater_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Yes</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+            <!-- End: Air Heater -->
+
+            <!-- Start: Water Heater -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Water Heater: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if water_heater_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterHeaterModal">
+                                {% if water_heater_status %} Turn Off {% else %} Turn On {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="waterHeaterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "water_heater_form", name="water_heater_form">
+                                    {% csrf_token %}                
+                                    {{ water_heater_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End: Water Heater -->
+
+            <!-- Start: Water Pump -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Water Pump: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if pump_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpModal">
+                                {% if pump_status %} Turn Off {% else %} Turn On {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="waterPumpModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "water_pump_form", name="water_pump_form">
+                                    {% csrf_token %}                
+                                    {{ water_pump_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Water Pump -->
+
+            <!-- Start: Drain Valve -->
+            <!-- TODO!! finish forms -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Drain Valve: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if valve1_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#drainValveModal">
+                                {% if valve1_status %} Close Vavle{% else %} Open Valve {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="drainValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Drain Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "drain_valve_form", name="drain_valve_form">
+                                    {% csrf_token %}                
+                                    {{ drain_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Drain Valve -->
+
+            <!-- Start: Fan -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Fan: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if fan_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fanModal">
+                                {% if fan_status %} Turn Off {% else %} Turn On {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="fanModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Fan</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "fan_form", name="fan_form">
+                                    {% csrf_token %}                
+                                    {{ fan_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Fan -->
+
+            <!-- Start: Vent -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Ventilation Fan: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if vent_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ventModal">
+                                {% if vent_status %} Turn Off {% else %} Turn On {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="ventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Vent</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "vent_form", name="vent_form">
+                                    {% csrf_token %}                
+                                    {{ vent_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: vent -->
+
+        </div>
+    </div>
+    <!-- End: Equipment Status -->
+
+      
+   
+<!-- BEGIN CHARTS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Begin Temp Chart Script -->
+    <script>
+        const temp = document.getElementById('tempChart');
+        console.log('{{temps_labels}}')
+        console.log(typeof('{{temps_labels}}'))
+        label = JSON.parse("{{temps_labels}}".replace(/(&quot\;)/g,"\"")),
+        console.log(label)
+      
+        new Chart(temp, {
+          backgroundColor: 'green',
+          type: 'line',
+          data: {
+            labels: label,
+            datasets: [{
+              label: 'Nursery Temp: F',
+              data: JSON.parse("{{historical_nursery_temps}}"),
+              borderWidth: 1,
+              backgroundColor: 'green',
+              borderColor: 'green',
+            },
+            {
+              label: 'Outside Temp: F',
+              data: JSON.parse("{{historical_outside_temps}}"),
+              borderWidth: 1,
+              borderColor: 'gray',
+              backgroundColor: 'gray',
+            }]
+          },
+          options: {           
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            }
+          }
+        });
+    </script>
+    <!-- End Temp Chart Script -->
+
+    <!-- Begin Humidity Chart Script -->
+    <script>
+        const humidity = document.getElementById('humidityChart');
+        new Chart(humidity, {
+          type: 'line',
+          data: {
+            labels: label,
+            datasets: [
+            {
+              label: 'Humidity: %',
+              data: JSON.parse("{{historical_humidity}}"),
+              borderWidth: 1,
+              borderColor: 'gray',
+              backgroundColor: 'gray',
+            }]
+          },
+          options: {           
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            }
+          }
+        });
+      </script>
+    <!-- End Humidity Chart Script -->
+      
+    <!-- Begin Water Temp Chart Script -->
+    <script>
+        const water_temp = document.getElementById('waterTempChart');
+      
+        new Chart(water_temp, {
+          backgroundColor: 'gray',
+          type: 'line',
+          data: {
+            labels: label,
+            datasets: [{
+              label: 'Water Temp: F',
+              data: JSON.parse("{{historical_water_temps}}"),
+              borderWidth: 1,
+              backgroundColor: 'gray',
+              borderColor: 'gray',
+            }]
+          },
+          options: {           
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            }
+          }
+        });
+    </script>
+    <!-- End Water Temp Chart Script -->
+<!-- END CHARTS -->
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+.vl {
+   color: rgb(15, 10, 10); 
+   height: 100%;
+   border-left: 1px;
+  }
+
+  .vr{
+    color: white;
+    border-left: 1px;
+    border-color: black;
+  }
+
+.user_col{
+    border: 2px;
+    border-color: black;
+    background-color: aqua;
+}
