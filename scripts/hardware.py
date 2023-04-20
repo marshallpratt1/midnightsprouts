@@ -77,7 +77,7 @@ def automatic_mode():
     else:
         GPIO.output(FAN_TOGGLE, GPIO.LOW)
     #automatic vent toggle
-    if(WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint > WaterTemp.objects.order_by('id').last().water_temp):
+    if(HumiditySetpoint.objects.order_by('id').last().humidity_setpoint > Humidity.objects.order_by('id').last().humidity):
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
     else:
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
