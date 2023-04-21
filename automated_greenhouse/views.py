@@ -38,9 +38,9 @@ def index(request):
         if 'garden_start_hour' in request.POST:
             util.set_garden_valve_times(request.POST['garden_start_hour'],request.POST['start_minute'], request.POST['duration'])
         if 'tree_start_hour' in request.POST:
-            util.set_greenhouse_valve_times(request.POST['tree_start_hour'],request.POST['start_minute'], request.POST['duration'])       
+            util.set_greenhouse_tree_valve_times(request.POST['tree_start_hour'],request.POST['start_minute'], request.POST['duration'])       
         if 'planter_start_hour' in request.POST:
-            util.set_greenhouse_valve_times(request.POST['planter_start_hour'],request.POST['start_minute'], request.POST['duration'])       
+            util.set_greenhouse_planter_valve_times(request.POST['planter_start_hour'],request.POST['start_minute'], request.POST['duration'])       
         if 'toggle_greenhouse_planter_valve' in request.POST:
             util.toggle_greenhouse_planter_valve()
         if 'toggle_greenhouse_tree_valve' in request.POST:
@@ -89,6 +89,8 @@ def index(request):
         'greenhouse_planter_valve_status': GreenhousePlanterValveStatus.objects.order_by('-id').first().greenhouse_planter_valve_open,
         'greenhouse_tree_valve_status': GreenhouseTreeValveStatus.objects.order_by('-id').first().greenhouse_tree_valve_open,
         'greenhouse_tree_valve_start_hour' : GreenhouseTreeValveStatus.objects.order_by('-id').first().start_hour,
+        'greenhouse_planter_valve_start_hour' : GreenhousePlanterValveStatus.objects.order_by('-id').first().start_hour,
+        'garden_valve_start_hour' : GardenValveStatus.objects.order_by('-id').first().start_hour,
         'air_temp_setpoint': AirTempSetpoint.objects.order_by('-id').first().air_temp_setpoint,
         'water_temp_setpoint': WaterTempSetpoint.objects.order_by('-id').first().water_temp_setpoint,
         'humidity_setpoint': HumiditySetpoint.objects.order_by('-id').first().humidity_setpoint,

@@ -302,6 +302,9 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Garden Valve: </p>
+                    <p>Start Hour: {{ garden_valve_start_hour }}
+                       Start Minute: {{ garden_valve_start_minute }}
+                    </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if garden_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic %}
@@ -361,6 +364,9 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Greenhouse Planter Valve: </p>
+                    <p>Start Hour: {{ greenhouse_planter_valve_start_hour }}
+                        Start Minute: {{ greenhouse_planter_valve_start_minute }}
+                     </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_planter_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic %}
@@ -420,6 +426,9 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Greenhouse Tree Valve: </p>
+                    <p>Start Hour: {{ greenhouse_tree_valve_start_hour }}
+                        Start Minute: {{ greenhouse_tree_valve_start_minute }}
+                     </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_tree_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic %}

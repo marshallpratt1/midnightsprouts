@@ -81,13 +81,22 @@ def set_garden_valve_times(hour, minute, duration):
     new_valve_status.duration = duration
     new_valve_status.save()
 
-def set_greenhouse_valve_times(hour, minute, duration):
+def set_greenhouse_tree_valve_times(hour, minute, duration):
     old_valve_status = GreenhouseTreeValveStatus.objects.order_by('-id')[0]
     new_valve_status = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = True) if old_valve_status.greenhouse_tree_valve_open else GreenhouseTreeValveStatus(greenhouse_tree_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
     new_valve_status.save()
+
+def set_greenhouse_planter_valve_times(hour, minute, duration):
+    old_valve_status = GreenhousePlanterValveStatus.objects.order_by('-id')[0]
+    new_valve_status = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = True) if old_valve_status.greenhouse_planter_valve_open else GreenhousePlanterValveStatus(greenhouse_planter_valve_open = False)
+    new_valve_status.start_hour = hour
+    new_valve_status.start_minute = minute
+    new_valve_status.duration = duration
+    new_valve_status.save()
+
 
 
 
