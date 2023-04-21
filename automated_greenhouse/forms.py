@@ -42,6 +42,11 @@ class WaterHeaterForm(forms.Form):
 class PumpForm(forms.Form):
     toggle_pump = forms.BooleanField(label='Toggle Pump:')
 
+class PumpTimeForm(forms.Form):
+    pump_start_hour = forms.IntegerField(label='Start time, hour:', min_value=0, max_value=23)
+    start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
+
 class GardenValveForm(forms.Form):
     toggle_garden_valve = forms.BooleanField(label='Toggle Garden Valve:')
 
