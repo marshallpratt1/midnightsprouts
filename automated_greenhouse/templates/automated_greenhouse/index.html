@@ -258,6 +258,7 @@
                         </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <!-- End: Water Heater -->
@@ -268,7 +269,11 @@
                     <p class="lead">Water Pump: </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if pump_status %} ON {% else %} OFF {% endif %}</strong></p>
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if automatic %} 
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpTimeModal">
+                            Set Pump Times
+                        </button>                    
+                        {% else %}
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpModal">
                                 {% if pump_status %} Turn Off {% else %} Turn On {% endif %}
                             </button>
@@ -278,13 +283,33 @@
                         <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Pump</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form action = "{% url 'index' %}" method="post" id = "water_pump_form", name="water_pump_form">
                                     {% csrf_token %}                
                                     {{ water_pump_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set pump on time and duration -->
+                    <div class="modal fade" id="waterPumpTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Pump Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "pump_time_form", name="pump_time_form">
+                                    {% csrf_token %}                
+                                    {{ pump_time_form }}
                                     <hr>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>

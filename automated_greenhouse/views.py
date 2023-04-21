@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RegisterForm, AirTempForm, HumidityForm, WaterForm, SystemStatusForm, GreenhouseTreeValveTimeForm
 from .forms import NurseryHeaterForm, WaterHeaterForm, GardenValveForm, GreenhousePlanterValveForm, GreenhouseTreeValveForm, FanForm, VentForm, PumpForm
-from .forms import GreenhousePlanterValveTimeForm, GardenValveTimeForm, GreenhouseTreeValveTimeForm
+from .forms import GreenhousePlanterValveTimeForm, GardenValveTimeForm, GreenhouseTreeValveTimeForm, PumpTimeForm
 from . import util
 import json
 
@@ -39,6 +39,8 @@ def index(request):
             util.set_garden_valve_times(request.POST['garden_start_hour'],request.POST['start_minute'], request.POST['duration'])
         if 'tree_start_hour' in request.POST:
             util.set_greenhouse_tree_valve_times(request.POST['tree_start_hour'],request.POST['start_minute'], request.POST['duration'])       
+        if 'pump_start_hour' in request.POST:
+            util.set_pump_times(request.POST['pump_start_hour'],request.POST['start_minute'], request.POST['duration'])
         if 'planter_start_hour' in request.POST:
             util.set_greenhouse_planter_valve_times(request.POST['planter_start_hour'],request.POST['start_minute'], request.POST['duration'])       
         if 'toggle_greenhouse_planter_valve' in request.POST:
@@ -70,6 +72,7 @@ def index(request):
         'greenhouse_tree_valve_time_form': GreenhouseTreeValveTimeForm,
         'greenhouse_planter_valve_time_form' : GreenhousePlanterValveTimeForm,
         'garden_valve_time_form' : GardenValveTimeForm,
+        'pump_time_form' : PumpTimeForm,
         'fan_form': FanForm,
         'vent_form': VentForm,
         'automatic': automatic,
@@ -91,6 +94,7 @@ def index(request):
         'greenhouse_tree_valve_start_hour' : GreenhouseTreeValveStatus.objects.order_by('-id').first().start_hour,
         'greenhouse_planter_valve_start_hour' : GreenhousePlanterValveStatus.objects.order_by('-id').first().start_hour,
         'garden_valve_start_hour' : GardenValveStatus.objects.order_by('-id').first().start_hour,
+        'pump_start_hour' : PumpStatus.objects.order_by('-id').first().start_hour,
         'air_temp_setpoint': AirTempSetpoint.objects.order_by('-id').first().air_temp_setpoint,
         'water_temp_setpoint': WaterTempSetpoint.objects.order_by('-id').first().water_temp_setpoint,
         'humidity_setpoint': HumiditySetpoint.objects.order_by('-id').first().humidity_setpoint,

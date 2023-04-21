@@ -97,7 +97,13 @@ def set_greenhouse_planter_valve_times(hour, minute, duration):
     new_valve_status.duration = duration
     new_valve_status.save()
 
-
+def set_pump_times(hour, minute, duration):
+    old_pump_status = PumpStatus.objects.order_by('-id')[0]
+    new_pump_status = PumpStatus(pump_on = True) if old_pump_status.pump_on else PumpStatus(pump_on = False)
+    new_pump_status.start_hour = hour
+    new_pump_status.start_minute = minute
+    new_pump_status.duration = duration
+    new_pump_status.save()
 
 
 NUMBER_OF_CHART_DATAPOINTS = 20
