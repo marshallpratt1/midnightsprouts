@@ -34,7 +34,7 @@ except KeyError as e:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.midnightsprouts.us']
+ALLOWED_HOSTS = ['.midnightsprouts.us', '127.0.0.1']
 
 AUTH_USER_MODEL = 'automated_greenhouse.User'
 

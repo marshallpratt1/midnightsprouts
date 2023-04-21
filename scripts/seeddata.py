@@ -1,6 +1,6 @@
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumididtySetpoint
+from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
 
 def run():
     outside_air_temps = [43, 32, 34, 50, 27, 43, 32, 34, 50, 27, 43, 32, 34, 50, 27, 43, 32, 34, 50, 27]
@@ -32,7 +32,7 @@ def run():
     air_temp_setpoint.save()
     water_setpoint = WaterTempSetpoint()
     water_setpoint.save()
-    humidity_setpoint = HumididtySetpoint()
+    humidity_setpoint = HumiditySetpoint()
     humidity_setpoint.save()
 
     for i in range(len(outside_air_temps)):
