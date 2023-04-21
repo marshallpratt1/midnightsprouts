@@ -45,11 +45,26 @@ class PumpForm(forms.Form):
 class GardenValveForm(forms.Form):
     toggle_garden_valve = forms.BooleanField(label='Toggle Garden Valve:')
 
+class GardenValveTimeForm(forms.Form):
+    garden_start_hour = forms.IntegerField(label='Start time, hour:', min_value=0, max_value=23)
+    start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
+
 class GreenhousePlanterValveForm(forms.Form):
     toggle_greenhouse_planter_valve = forms.BooleanField(label='Toggle Greenhouse Planter Valve:')
 
+class GreenhousePlanterValveTimeForm(forms.Form):
+    planter_start_hour = forms.IntegerField(label='Start time, hour:', min_value=0, max_value=23)
+    start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
+
 class GreenhouseTreeValveForm(forms.Form):
     toggle_greenhouse_tree_valve = forms.BooleanField(label='Toggle Greenhouse Tree Valve:')
+
+class GreenhouseTreeValveTimeForm(forms.Form):
+    tree_start_hour = forms.IntegerField(label='Start time, hour:', min_value=0, max_value=23)
+    start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
 
 class FanForm(forms.Form):
     toggle_fan = forms.BooleanField(label='Toggle Fan:')

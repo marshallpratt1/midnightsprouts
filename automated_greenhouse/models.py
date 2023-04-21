@@ -50,6 +50,9 @@ class FanStatus(models.Model):
 class PumpStatus(models.Model):
     pump_on = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
+    start_hour = models.IntegerField(default=0)
+    start_minute = models.IntegerField(default=0)
+    duration = models.IntegerField(default=0)
 
 
 class VentStatus(models.Model):
@@ -70,14 +73,25 @@ class WaterHeaterStatus(models.Model):
 class GardenValveStatus(models.Model):
     garden_valve_open = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
+    start_hour = models.IntegerField(default=0)
+    start_minute = models.IntegerField(default=0)
+    duration = models.IntegerField(default=0)
+
 
 class GreenhousePlanterValveStatus(models.Model):
     greenhouse_planter_valve_open = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
+    start_hour = models.IntegerField(default=0)
+    start_minute = models.IntegerField(default=0)
+    duration = models.IntegerField(default=0)
+
 
 class GreenhouseTreeValveStatus(models.Model):
     greenhouse_tree_valve_open = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
+    start_hour = models.IntegerField(default=0)
+    start_minute = models.IntegerField(default=0)
+    duration = models.IntegerField(default=0)
 
 
 class AirTempSetpoint(models.Model):

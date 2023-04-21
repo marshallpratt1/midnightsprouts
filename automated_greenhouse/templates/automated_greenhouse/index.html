@@ -304,7 +304,11 @@
                     <p class="lead">Garden Valve: </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if garden_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if automatic %}
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %}                     
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveModal">
                                 {% if garden_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
                             </button>
@@ -329,6 +333,26 @@
                         </div>
                         </div>
                     </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="gardenValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Garden Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "garden_valve_time_form", name="garden_valve_time_form">
+                                    {% csrf_token %}                
+                                    {{ garden_valve_time_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
                 </div>
             </div>   
             <!-- End: Garden Valve -->
@@ -339,8 +363,12 @@
                     <p class="lead">Greenhouse Planter Valve: </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_planter_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveModal">
+                        {% if automatic %}
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %}     
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveModal">
                                 {% if greenhouse_planter_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
                             </button>
                         {% endif %}
@@ -364,6 +392,26 @@
                         </div>
                         </div>
                     </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="greenhousePlanterValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Greenhouse Planter Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_planter_valve_time_form", name="greenhouse_planter_valve_time_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_planter_valve_time_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
                 </div>
             </div>   
             <!-- End: Greenhouse Planter Valve -->
@@ -374,9 +422,13 @@
                     <p class="lead">Greenhouse Tree Valve: </p>
                     <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_tree_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if automatic %}
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %} 
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveModal">
-                                {% if greenhouse_tree_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
+                                {% if greenhouse_tree_valve_status %} Close Valve{% else %} Open Valve {% endif %}
                             </button>
                         {% endif %}
                     {% endif %}
@@ -391,6 +443,26 @@
                                 <form action = "{% url 'index' %}" method="post" id = "greenhouse_tree_valve_form", name="greenhouse_tree_valve_form">
                                     {% csrf_token %}                
                                     {{ greenhouse_tree_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="greenhouseTreeValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Greenhouse Tree Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_tree_valve_time_form", name="greenhouse_tree_valve_time_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_tree_valve_time_form }}
                                     <hr>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
