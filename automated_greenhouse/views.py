@@ -70,7 +70,7 @@ def index(request):
         'valve1_status': Valve1Status.objects.order_by('-id').first().valve1_open,
         'air_temp_setpoint': AirTempSetpoint.objects.order_by('-id').first().air_temp_setpoint,
         'water_temp_setpoint': WaterTempSetpoint.objects.order_by('-id').first().water_temp_setpoint,
-        'humidity_setpoint': HumididtySetpoint.objects.order_by('-id').first().humidity_setpoint,
+        'humidity_setpoint': HumiditySetpoint.objects.order_by('-id').first().humidity_setpoint,
         'historical_nursery_temps': json.dumps([x.nursery_air_temp for x in NurseryAirTemp.objects.order_by('-id')[:20]]),
         'historical_outside_temps': json.dumps([x.outside_air_temp for x in OutsideAirTemp.objects.order_by('-id')[:20]]),
         'temps_labels': json.dumps(util.get_date_time_labels([x.created_at for x in OutsideAirTemp.objects.order_by('-id')[:20]])),

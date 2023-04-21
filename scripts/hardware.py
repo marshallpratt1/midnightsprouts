@@ -1,12 +1,14 @@
 import os
 import glob
 import time
+from datetime import datetime, timedelta
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 from django.utils import timezone
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
 from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
+from automated_greenhouse.util import *
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -16,11 +18,17 @@ WATER_HEATER = 5
 PUMP_TOGGLE = 6
 FAN_TOGGLE = 13
 VENT_TOGGLE = 19
+VALVE_TOGGLE_1 = 16
+VALVE_TOGGLE_2 = 20
+VALVE_TOGGLE_3 = 21
 GPIO.setup(AIR_HEATER,GPIO.OUT)
 GPIO.setup(WATER_HEATER,GPIO.OUT)
 GPIO.setup(PUMP_TOGGLE,GPIO.OUT)
 GPIO.setup(FAN_TOGGLE,GPIO.OUT)
 GPIO.setup(VENT_TOGGLE,GPIO.OUT)
+GPIO.setup(VALVE_TOGGLE_1,GPIO.OUT)
+GPIO.setup(VALVE_TOGGLE_2,GPIO.OUT)
+GPIO.setup(VALVE_TOGGLE_3,GPIO.OUT)
 
 sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/devices/28-030d979455e5/w1_slave']
 
@@ -57,33 +65,62 @@ def automatic_mode():
     #automatic air heater toggle
     if(AirTempSetpoint.objects.order_by('id').last().air_temp_setpoint > NurseryAirTemp.objects.order_by('id').last().nursery_air_temp):
         GPIO.output(AIR_HEATER, GPIO.HIGH)
-        GPIO.output(FAN_TOGGLE, GPIO.HIGH)
+        if(AirHeaterStatus.objects.order_by('id').last().air_heater_on == False):
+            toggle_nursery_heater()
+        #GPIO.output(FAN_TOGGLE, GPIO.HIGH)
     else:
         GPIO.output(AIR_HEATER, GPIO.LOW)
-        GPIO.output(FAN_TOGGLE, GPIO.LOW)
+        if(AirHeaterStatus.objects.order_by('id').last().air_heater_on == True):
+            toggle_nursery_heater()
+        #GPIO.output(FAN_TOGGLE, GPIO.LOW)
     #automatic water heater toggle
     if(WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint > WaterTemp.objects.order_by('id').last().water_temp):
         GPIO.output(WATER_HEATER, GPIO.HIGH)
+        if(WaterHeaterStatus.objects.order_by('id').last().water_heater_on == False):
+            toggle_water_heater()
     else:
         GPIO.output(WATER_HEATER, GPIO.LOW)
+        if(WaterHeaterStatus.objects.order_by('id').last().water_heater_on == True):
+            toggle_water_heater()
     #automatic pump toggle
-    if(WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint > WaterTemp.objects.order_by('id').last().water_temp):
+    if(NOW_TIME.hour == 12 and NOW_TIME.minute >= 1 and NOW_TIME.minute < 11):
         GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
+        if(PumpStatus.objects.order_by('id').last().pump_on == False):
+            toggle_pump()
     else:
         GPIO.output(PUMP_TOGGLE, GPIO.LOW)
+        if(PumpStatus.objects.order_by('id').last().pump_on == True):
+            toggle_pump()
     #automatic fan toggle
-    if(WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint > WaterTemp.objects.order_by('id').last().water_temp):
+    if(FanStatus.objects.order_by('id').last().fan_on == False):
         GPIO.output(FAN_TOGGLE, GPIO.HIGH)
+        toggle_fan()
     else:
-        GPIO.output(FAN_TOGGLE, GPIO.LOW)
+        pass
     #automatic vent toggle
-    if(HumiditySetpoint.objects.order_by('id').last().humidity_setpoint > Humidity.objects.order_by('id').last().humidity):
+    if(HumiditySetpoint.objects.order_by('id').last().humidity_setpoint < Humidity.objects.order_by('id').last().humidity):
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
     else:
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
+    #automatic valve1
+    if(NOW_TIME.hour == 1 and NOW_TIME.minute <11 and NOW_TIME.minute > 1):
+        GPIO.output(VALVE_TOGGLE_1, GPIO.HIGH)
+    else:
+        GPIO.output(VALVE_TOGGLE_1, GPIO.LOW)
+    #automatic valve2
+    if(NOW_TIME.hour == 2 and NOW_TIME.minute <11 and NOW_TIME.minute > 1):
+        GPIO.output(VALVE_TOGGLE_2, GPIO.HIGH)
+    else:
+        GPIO.output(VALVE_TOGGLE_2, GPIO.LOW)
+    #automatic valve3
+    if(NOW_TIME.hour == 3 and NOW_TIME.minute <11 and NOW_TIME.minute > 1):
+        GPIO.output(VALVE_TOGGLE_3, GPIO.HIGH)
+    else:
+        GPIO.output(VALVE_TOGGLE_3, GPIO.LOW)
 
 
 while True:
+    NOW_TIME = datetime.now() + timedelta(hours = 16)
     read_temp()
     read_humidity()
     #if(SystemStatus.objects.order_by('-id')[0].automatic == true)
