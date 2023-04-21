@@ -1,7 +1,8 @@
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
-from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
-from datetime import timedelta, datetime
+from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
+from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
+from datetime import timedelta, datetime 
+import json
 
 def update_air_temp_setpoint(setpoint):
     new_setpoint = AirTempSetpoint(air_temp_setpoint=int(setpoint))
@@ -35,9 +36,19 @@ def toggle_pump():
     new_pump_status = PumpStatus(pump_on = False) if old_pump_status.pump_on else PumpStatus(pump_on = True)
     new_pump_status.save()
 
-def toggle_drain_valve():
-    old_valve_status = Valve1Status.objects.order_by('-id')[0]
-    new_valve_status = Valve1Status(valve1_open = False) if old_valve_status.valve1_open else Valve1Status(valve1_open = True)
+def toggle_garden_valve():
+    old_valve_status = GardenValveStatus.objects.order_by('-id')[0]
+    new_valve_status = GardenValveStatus(garden_valve_open = False) if old_valve_status.garden_valve_open else GardenValveStatus(garden_valve_open = True)
+    new_valve_status.save()
+
+def toggle_greenhouse_planter_valve():
+    old_valve_status = GreenhousePlanterValveStatus.objects.order_by('-id')[0]
+    new_valve_status = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = False) if old_valve_status.greenhouse_planter_valve_open else GreenhousePlanterValveStatus(greenhouse_planter_valve_open = True)
+    new_valve_status.save()
+
+def toggle_greenhouse_tree_valve():
+    old_valve_status = GreenhouseTreeValveStatus.objects.order_by('-id')[0]
+    new_valve_status = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = False) if old_valve_status.greenhouse_tree_valve_open else GreenhouseTreeValveStatus(greenhouse_tree_valve_open = True)
     new_valve_status.save()
 
 def toggle_fan():
@@ -50,8 +61,41 @@ def toggle_vent():
     new_status = VentStatus(vent_on = False) if old_status.vent_on else VentStatus(vent_on = True)
     new_status.save()
 
-def get_date_time_labels(dt_str):
+
+
+
+NUMBER_OF_CHART_DATAPOINTS = 20
+
+def get_date_time_labels():
+
+    time_labels = [x.created_at for x in OutsideAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    time_labels.reverse()
     result = []
-    for time in dt_str:
-        result.append(str(time + timedelta(hours = -9))[6:16])
-    return result
+    for time in time_labels:
+        result.append(str(time + timedelta(hours=-8))[6:16])
+    return json.dumps(result)
+
+
+def get_historical_nursery_temps():
+    historical_nursery_temps = [x.nursery_air_temp for x in NurseryAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    historical_nursery_temps.reverse()
+    json.dumps(historical_nursery_temps)
+    return historical_nursery_temps
+
+def get_historical_greenhouse_temps():
+    historical_greenhouse_temps = [x.outside_air_temp for x in OutsideAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    historical_greenhouse_temps.reverse()
+    json.dumps(historical_greenhouse_temps)
+    return historical_greenhouse_temps
+
+def get_historical_humidity():
+    get_historical_humidity = [x.humidity for x in Humidity.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    get_historical_humidity.reverse()
+    json.dumps(get_historical_humidity)
+    return get_historical_humidity
+
+def get_historical_water_temps():
+    historical_water_temps = [x.water_temp for x in WaterTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    historical_water_temps.reverse()
+    json.dumps(historical_water_temps)
+    return historical_water_temps

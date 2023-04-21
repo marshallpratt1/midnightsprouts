@@ -1,12 +1,12 @@
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
-from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
+from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
+from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 
 def run():
-    outside_air_temps = [43, 32, 34, 50, 27, 43, 32, 34, 50, 27, 43, 32, 34, 50, 27, 43, 32, 34, 50, 27]
-    air_temps = [76, 81, 63, 67, 68, 70, 73, 75, 71, 70, 76, 81, 63, 67, 68, 70, 73, 75, 71, 70]
-    water_temps = [70, 73, 75, 71, 70, 76, 81, 63, 67, 68, 70, 73, 75, 71, 70, 76, 81, 63, 67, 68]
-    humidity_levels = [76, 81, 63, 67, 68, 76, 81, 63, 67, 68, 76, 81, 63, 67, 68, 76, 81, 63, 67, 68]
+    outside_air_temps = [30,30,30,30,30,35,35,35,35,35,40,40,40,40,40,45,45,45,45,45]
+    air_temps = [70, 70, 70, 70, 70, 71, 71, 71, 71, 71, 72, 72, 72, 72, 72, 73, 73, 73, 73, 73 ]
+    water_temps = [70, 70, 70, 70, 70, 71, 71, 71, 71, 71, 72, 72, 72, 72, 72, 73, 73, 73, 73, 73]
+    humidity_levels = [70, 70, 70, 70, 70, 71, 71, 71, 71, 71, 72, 72, 72, 72, 72, 73, 73, 73, 73, 73]
     water_levels = [True, True, True, True, False, True, False, True, True, True, True, True, True, True, False, True, False, True, True, True]
     
     air_temp_setpoints = [80, 80, 82, 82, 85, 80, 80, 82, 82, 85]
@@ -26,7 +26,11 @@ def run():
     air_heater_status.save()
     water_heater_status = WaterHeaterStatus()
     water_heater_status.save()
-    valve_status = Valve1Status()
+    valve_status = GardenValveStatus()
+    valve_status.save()
+    valve_status = GreenhousePlanterValveStatus()
+    valve_status.save()
+    valve_status = GreenhouseTreeValveStatus()
     valve_status.save()
     air_temp_setpoint = AirTempSetpoint()
     air_temp_setpoint.save()

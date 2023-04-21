@@ -42,8 +42,14 @@ class WaterHeaterForm(forms.Form):
 class PumpForm(forms.Form):
     toggle_pump = forms.BooleanField(label='Toggle Pump:')
 
-class DrainValveForm(forms.Form):
-    toggle_drain_valve = forms.BooleanField(label='Toggle Drain Valve:')
+class GardenValveForm(forms.Form):
+    toggle_garden_valve = forms.BooleanField(label='Toggle Garden Valve:')
+
+class GreenhousePlanterValveForm(forms.Form):
+    toggle_greenhouse_planter_valve = forms.BooleanField(label='Toggle Greenhouse Planter Valve:')
+
+class GreenhouseTreeValveForm(forms.Form):
+    toggle_greenhouse_tree_valve = forms.BooleanField(label='Toggle Greenhouse Tree Valve:')
 
 class FanForm(forms.Form):
     toggle_fan = forms.BooleanField(label='Toggle Fan:')

@@ -16,7 +16,7 @@ class SystemStatus(models.Model):
 
 class OutsideAirTemp(models.Model):
     outside_air_temp = models.FloatField(default=0.0)
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now=True, )
 
     def __str__(self) -> str:
         return f"{self.outside_air_temp} °F at {self.created_at}"
@@ -67,8 +67,16 @@ class WaterHeaterStatus(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
 
-class Valve1Status(models.Model):
-    valve1_open = models.BooleanField(default=False)
+class GardenValveStatus(models.Model):
+    garden_valve_open = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+
+class GreenhousePlanterValveStatus(models.Model):
+    greenhouse_planter_valve_open = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+
+class GreenhouseTreeValveStatus(models.Model):
+    greenhouse_tree_valve_open = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
 
 

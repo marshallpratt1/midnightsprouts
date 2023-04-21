@@ -297,30 +297,30 @@
             </div>   
             <!-- End: Water Pump -->
 
-            <!-- Start: Drain Valve -->
             <!-- TODO!! finish forms -->
+            <!-- Start: Garden Valve -->
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
-                    <p class="lead">Drain Valve: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if valve1_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    <p class="lead">Garden Valve: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if garden_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#drainValveModal">
-                                {% if valve1_status %} Close Vavle{% else %} Open Valve {% endif %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveModal">
+                                {% if garden_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
                             </button>
                         {% endif %}
                     {% endif %}
-                    <div class="modal fade" id="drainValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="gardenValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Drain Valve</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Garden Valve</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action = "{% url 'index' %}" method="post" id = "drain_valve_form", name="drain_valve_form">
+                                <form action = "{% url 'index' %}" method="post" id = "garden_valve_form", name="garden_valve_form">
                                     {% csrf_token %}                
-                                    {{ drain_valve_form }}
+                                    {{ garden_valve_form }}
                                     <hr>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
@@ -331,7 +331,78 @@
                     </div>
                 </div>
             </div>   
-            <!-- End: Drain Valve -->
+            <!-- End: Garden Valve -->
+
+            <!-- Start: Greenhouse Planter Valve -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Greenhouse Planter Valve: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_planter_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveModal">
+                                {% if greenhouse_planter_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="greenhousePlanterValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Drain Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_planter_valve_form", name="greenhouse_planter_valve_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_planter_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Greenhouse Planter Valve -->
+
+            <!-- Start: Greenhouse Tree Valve -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Greenhouse Tree Valve: </p>
+                    <p class="lead" style="font-size: xx-large;"><strong>{% if greenhouse_tree_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic == False %} 
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveModal">
+                                {% if greenhouse_tree_valve_status %} Close Vavle{% else %} Open Valve {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="greenhouseTreeValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Greenhouse Tree Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_tree_valve_form", name="greenhouse_tree_valve_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_tree_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Greenhouse Tree Valve -->
+
 
             <!-- Start: Fan -->
             <div class="col col-md-2">
@@ -418,6 +489,7 @@
         console.log(typeof('{{temps_labels}}'))
         label = JSON.parse("{{temps_labels}}".replace(/(&quot\;)/g,"\"")),
         console.log(label)
+        console.log('{{historical_nursery_temps}}')
       
         new Chart(temp, {
           backgroundColor: 'green',

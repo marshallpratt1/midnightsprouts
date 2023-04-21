@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
-from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, Valve1Status
-from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
+from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
+from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 from django.db import IntegrityError
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RegisterForm, AirTempForm, HumidityForm, WaterForm, SystemStatusForm
-from .forms import NurseryHeaterForm, WaterHeaterForm, DrainValveForm, FanForm, VentForm, PumpForm
+from .forms import NurseryHeaterForm, WaterHeaterForm, GardenValveForm, GreenhousePlanterValveForm, GreenhouseTreeValveForm, FanForm, VentForm, PumpForm
 from . import util
 import json
 
@@ -32,8 +32,12 @@ def index(request):
             util.toggle_water_heater()
         if 'toggle_pump' in request.POST:
             util.toggle_pump()
-        if 'toggle_drain_valve' in request.POST:
-            util.toggle_drain_valve()
+        if 'toggle_garden_valve' in request.POST:
+            util.toggle_garden_valve()
+        if 'toggle_greenhouse_planter_valve' in request.POST:
+            util.toggle_greenhouse_planter_valve()
+        if 'toggle_greenhouse_tree_valve' in request.POST:
+            util.toggle_greenhouse_tree_valve()
         if 'toggle_fan' in request.POST:
             util.toggle_fan()
         if 'toggle_vent' in request.POST:
@@ -44,6 +48,7 @@ def index(request):
     system_message = 'Are you sure you want to switch the sytem to Manual?' if automatic else 'Are you sure you want to switch the sytem to Automatic?'
 
     # the context fetches all of the most recent database entries for website render
+    number_of_datapoints = 20
     return render(request, 'automated_greenhouse/index.html', {
         'air_form': AirTempForm,
         'humidity_form': HumidityForm,
@@ -52,7 +57,9 @@ def index(request):
         'nursery_heater_form': NurseryHeaterForm,
         'water_heater_form': WaterHeaterForm,
         'water_pump_form': PumpForm,
-        'drain_valve_form': DrainValveForm,
+        'garden_valve_form': GardenValveForm,
+        'greenhouse_planter_valve_form': GreenhousePlanterValveForm,
+        'greenhouse_tree_valve_form': GreenhouseTreeValveForm,
         'fan_form': FanForm,
         'vent_form': VentForm,
         'automatic': automatic,
@@ -67,15 +74,17 @@ def index(request):
         'vent_status': VentStatus.objects.order_by('-id').first().vent_on,
         'air_heater_status': AirHeaterStatus.objects.order_by('-id').first().air_heater_on,
         'water_heater_status': WaterHeaterStatus.objects.order_by('-id').first().water_heater_on,
-        'valve1_status': Valve1Status.objects.order_by('-id').first().valve1_open,
+        'garden_valve_status': GardenValveStatus.objects.order_by('-id').first().garden_valve_open,
+        'greenhouse_planter_valve_status': GreenhousePlanterValveStatus.objects.order_by('-id').first().greenhouse_planter_valve_open,
+        'greenhouse_tree_valve_status': GreenhouseTreeValveStatus.objects.order_by('-id').first().greenhouse_tree_valve_open,
         'air_temp_setpoint': AirTempSetpoint.objects.order_by('-id').first().air_temp_setpoint,
         'water_temp_setpoint': WaterTempSetpoint.objects.order_by('-id').first().water_temp_setpoint,
         'humidity_setpoint': HumiditySetpoint.objects.order_by('-id').first().humidity_setpoint,
-        'historical_nursery_temps': json.dumps([x.nursery_air_temp for x in NurseryAirTemp.objects.order_by('-id')[:20]]),
-        'historical_outside_temps': json.dumps([x.outside_air_temp for x in OutsideAirTemp.objects.order_by('-id')[:20]]),
-        'temps_labels': json.dumps(util.get_date_time_labels([x.created_at for x in OutsideAirTemp.objects.order_by('-id')[:20]])),
-        'historical_humidity': json.dumps([x.humidity for x in Humidity.objects.order_by('-id')[:20]]),
-        'historical_water_temps': json.dumps([x.water_temp for x in WaterTemp.objects.order_by('-id')[:20]]),
+        'historical_nursery_temps': util.get_historical_nursery_temps(),
+        'historical_outside_temps': util.get_historical_greenhouse_temps(),
+        'temps_labels': util.get_date_time_labels(),
+        'historical_humidity': util.get_historical_humidity(),
+        'historical_water_temps': util.get_historical_water_temps(),
     })
 
 # register new user
