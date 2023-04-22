@@ -38,11 +38,12 @@ sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/dev
 
 
 #reads temp data from ds18b20 and saves it to database
+#this reads temperatures for water and greenhouse
 def read_temp():
     for sensor_id, sensor_path in enumerate(sensor_paths):
         with open(sensor_path, 'r') as file:
             lines = file.readlines()
-        if lines[0].strip()[-3:] != 'YES':
+        if (lines != None and len(lines[0]) >= 3 and lines[0].strip()[-3:] != 'YES'):
             return None
         position = lines[1].find('t=')
         temp = float(lines[1][position+2:]) / 1000.0
@@ -55,7 +56,9 @@ def read_temp():
             elif sensor_id == 1:
                 data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                 data_to_send.save()
-#reads humidity and temp data from DHT11 and saves it to database               
+                
+#reads humidity and temp data from DHT11 and saves it to database
+#this reads temperature and humiditity for inside the nursery
 def read_humidity():
     current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
     if(current_temp != None):
