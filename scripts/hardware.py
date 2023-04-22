@@ -62,6 +62,10 @@ def read_humidity():
         current_temp_f = current_temp * 1.8 + 32
     else:
         current_temp_f = NurseryAirTemp.objects.order_by('id').last().nursery_air_temp
+    if (current_humidity == None):
+        current_humidity = Humidity.objects.order_by('id').last().humidity
+    else:
+        pass
     current_temp_f = "%.1f" % current_temp_f
     temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
     humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
