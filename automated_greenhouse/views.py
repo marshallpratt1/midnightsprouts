@@ -53,7 +53,7 @@ def index(request):
                     messages.add_message(request, messages.SUCCESS, success_message)
             except:
                 messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect(reverse('index'))
         elif not SystemStatus.objects.last().automatic:
             try:
                 if 'toggle_nursery_heater' in request.POST:
@@ -94,11 +94,11 @@ def index(request):
                     messages.add_message(request, messages.SUCCESS, success_message)
             except:
                 messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect(reverse('index'))
         #the user submitted a form while after system had switched status
         else:            
             messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect(reverse('index'))
 
     # automatic vs manual controls
     automatic = SystemStatus.objects.order_by('-id')[0].automatic
