@@ -40,23 +40,25 @@ sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/dev
 #reads temp data from ds18b20 and saves it to database
 #this reads temperatures for water and greenhouse
 def read_temp():
-    for sensor_id, sensor_path in enumerate(sensor_paths):
-        with open(sensor_path, 'r') as file:
-            lines = file.readlines()
-        if (lines != None and len(lines[0]) >= 3 and lines[0].strip()[-3:] != 'YES'):
-            return None
-        position = lines[1].find('t=')
-        temp = float(lines[1][position+2:]) / 1000.0
-        temp_f = temp * 1.8 + 32
-        current_temp = "%.1f" % temp_f
-        if current_temp is not None:
-            if sensor_id == 0:
-                data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
-                data_to_send.save()
-            elif sensor_id == 1:
-                data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
-                data_to_send.save()
-                
+    try:
+        for sensor_id, sensor_path in enumerate(sensor_paths):
+            with open(sensor_path, 'r') as file:
+                lines = file.readlines()
+            if (lines != None and len(lines[0]) > 3 and lines[0].strip()[-3:] != 'YES'):
+                return None
+            position = lines[1].find('t=')
+            temp = float(lines[1][position+2:]) / 1000.0
+            temp_f = temp * 1.8 + 32
+            current_temp = "%.1f" % temp_f
+            if current_temp is not None:
+                if sensor_id == 0:
+                    data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
+                    data_to_send.save()
+                elif sensor_id == 1:
+                    data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
+                    data_to_send.save()
+    except:
+        print ("temp probe issue at ", timezone.now())
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
 def read_humidity():
