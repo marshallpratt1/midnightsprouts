@@ -131,11 +131,11 @@ def automatic_mode():
         if(vent_status == True):
             toggle_vent()
     #toggle vent if it gets too hot    
-    if(air_temp > HIGH_TEMP_THRESHOLD):
+    if(air_temp > HIGH_TEMP_THRESHOLD and vent_status == False):
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
         if(vent_status == False):
             toggle_vent()
-    elif((air_temp <= air_temp_setpoint)):
+    elif((air_temp <= air_temp_setpoint) and vent_status == True and humidity_setpoint - humidity_buffer > humidity):
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
         if(vent_status == True):
             toggle_vent()
