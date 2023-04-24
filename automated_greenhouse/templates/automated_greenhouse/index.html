@@ -727,12 +727,12 @@
     <!-- End Water Temp Chart Script -->
 <!-- END CHARTS -->
 
-<!--BEGIN AUTO UPDATE-->
-
-    <!--BEGIN NURSERY TEMP UPDATE-->
+<!--BEGIN AUTO UPDATE-->    
     <script>
+        // update the sensor data and user options every 5 seconds
         setInterval(display_data, 5000);
 
+        // call all interval function from here
         function display_data(){
             display_nursery_temp()
             display_greenhouse_temp()
@@ -742,6 +742,7 @@
             update_system_status()
         }
         
+        // get and display most recent nursery temperature
         function display_nursery_temp() {
             fetch('/api/api_get_nursery_temp')            
             .then(response => response.json())
@@ -754,6 +755,7 @@
             });
         }
 
+        // get and display most recent greenhosue temperature
         function display_greenhouse_temp() {
             fetch('/api/api_get_greenhouse_temp')            
             .then(response => response.json())
@@ -766,6 +768,7 @@
             });
         }
 
+        // get and display most recent water temperature
         function display_water_temp() {
             fetch('/api/api_get_water_temp')            
             .then(response => response.json())
@@ -778,6 +781,7 @@
             });
         }
 
+        // get and display most recent nursery humidity 
         function display_nursery_humidity() {
             fetch('/api/api_get_nursery_humidity')            
             .then(response => response.json())
@@ -790,6 +794,7 @@
             });
         }
 
+        // update the associated charts, shift them to the left to accomodate the new value
         function update_chart(chart, label, data) {
             chart.data.labels.push(label);
             chart.data.labels.shift();
@@ -800,6 +805,7 @@
             chart.update();
 }
 
+        // get and display the most recent values for pumps, fans, etc...
         function update_equipment_status(){
             const BUTTON_DICT = {
                 'ON' : 'Turn Off',
@@ -829,6 +835,8 @@
                 })
         }
         
+        // handle system status, if there is a system change then all wathcing superusers 
+        // will be alerted and rebooted to reflect the new system status
         function update_system_status(){
             fetch('/api/api_get_system_status')
             .then(response => response.json())
@@ -853,9 +861,6 @@
         }
 
     </script>
-    <!--END NURSERY TEMP UPDATE-->
-
-
 <!--END AUTO UPDATE-->
 
 {% endblock %}

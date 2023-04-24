@@ -185,11 +185,15 @@ def register(request):
 
 
 ##########################################################################
-#api functions below here
+# api functions below here
+# these api functions are for use locally to improve the UI 
+# and allow the user to watch the sensor data in near real time
 ##########################################################################
 from django.http import JsonResponse
 from datetime import timedelta
 
+#offset for alaska daylight savings time. This is the only timezone this 
+#program will be used in
 AKDT_OFFSET = -8
 
 def api_get_nursery_temp(request):          
@@ -228,6 +232,7 @@ def api_get_water_temp(request):
         'water_temp_id' : last_water_temp.id,
     })
 
+#return current equipment status for website
 def api_get_equipment_status(request):
     nursery_heater_status = 'ON' if AirHeaterStatus.objects.last().air_heater_on else 'OFF'
     water_heater_status = 'ON' if WaterHeaterStatus.objects.last().water_heater_on else 'OFF'
