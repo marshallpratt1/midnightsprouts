@@ -4,7 +4,7 @@
 
     <!-- Start: System Status -->
     <hr>
-    <h3 id="system_status">Systems Status: {% if automatic %}Automatic{% else %}Manual{% endif %}</h3><br>
+    <h3 id="system_status">System Status: {% if automatic %}Automatic{% else %}Manual{% endif %}</h3><br>
         {% if user.is_superuser %}
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#statusModal">
                 Change Status
@@ -844,17 +844,17 @@
                 //the system status should rarely change, all other superusers should be alerted if they are logged in
                 
                 if ('{{user.is_superuser}}' == 'True'){
-                    if (document.getElementById("system_status").innerHTML == "Systems Status: Automatic" && data.system_status != 'Automatic'){
+                    if (document.getElementById("system_status").innerHTML == "System Status: Automatic" && data.system_status != 'Automatic'){
                         alert("Someone has changed the system status.")
                         window.location.href = window.location.href;
                     }
-                    if (document.getElementById("system_status").innerHTML == "Systems Status: Manual" && data.system_status != 'Manual'){
+                    if (document.getElementById("system_status").innerHTML == "System Status: Manual" && data.system_status != 'Manual'){
                         alert("Someone has changed the system status.")
                         window.location.href = window.location.href;
                     }                       
                 }  
                 else{
-                    document.getElementById("system_status").innerHTML = data.system_status
+                    document.getElementById("system_status").innerHTML = "System Status: " + data.system_status
                 }  
             }
             )
