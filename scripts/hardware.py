@@ -65,26 +65,36 @@ def read_humidity():
     current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
     if(current_temp != None):
         current_temp_f = current_temp * 1.8 + 32
-    else:
-        current_temp_f = NurseryAirTemp.objects.order_by('id').last().nursery_air_temp
-    if (current_humidity == None):
-        current_humidity = Humidity.objects.order_by('id').last().humidity
-    else:
-        pass
+        current_temp_f = "%.1f" % current_temp_f
+
+    if(current_humidity < 100):
+        temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
+        humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
+        temp_data_to_send.save()
+        humidity_data_to_send.save()	
+
+#reads humidity and temp data from DHT11 and saves it to database
+#this reads temperature and humiditity for inside the nursery
+def read_humidity():
+    current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
+    if(current_temp != None):
+        current_temp_f = current_temp * 1.8 + 32    
     current_temp_f = "%.1f" % current_temp_f
-    temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
-    humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
-    temp_data_to_send.save()
-    humidity_data_to_send.save()
+    # dscard bad sensor data
+    if(current_humidity < 100):
+        temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
+        humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
+        temp_data_to_send.save()
+        humidity_data_to_send.save()
 
 #function for handling all automatic mode logic
 def automatic_mode():
     #initilize objects status and setpoints by checking last database entry
-    air_temp_setpoint = AirTempSetpoint.objects.order_by('id').last().air_temp_setpoint
-    air_temp = NurseryAirTemp.objects.order_by('id').last().nursery_air_temp
-    air_heater_status = AirHeaterStatus.objects.order_by('id').last().air_heater_on
-    water_temp_setpoint = WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint
-    water_temp = WaterTemp.objects.order_by('id').last().water_temp
+    air_temp_setpoint = AirTempSetpoint.objects.last().air_temp_setpoint
+    air_temp = NurseryAirTemp.objects.last().nursery_air_temp
+    air_heater_status = AirHeaterStatus.objects.last().air_heater_on
+    water_temp_setpoint = WaterTempSetpoint.objects.last().water_temp_setpoint
+    water_temp = WaterTemp.objects.last().water_temp
     water_heater_status = WaterHeaterStatus.objects.order_by('id').last().water_heater_on
     fan_status = FanStatus.objects.order_by('id').last().fan_on
     humidity_setpoint = HumiditySetpoint.objects.order_by('id').last().humidity_setpoint
