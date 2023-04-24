@@ -322,7 +322,7 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Ventilation Fan: </p>
-                    <p class="lead" id="vent_status" style="font-size: xx-large;"><strong>{% if vent_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    <p class="lead" id="vent_status" style="font-size: xx-large;"><strong>{% if vent_status %}ON{% else %}OFF{% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %} 
                             <button type="button" id="vent_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ventModal">
@@ -816,22 +816,29 @@
             fetch('/api/api_get_equipment_status')
             .then(response => response.json())
             .then(data=> {
+                    
+                    if (document.getElementById("nursery_heater_button")){
+                        document.getElementById("nursery_heater_button").innerHTML = BUTTON_DICT[data.nursery_heater_status]
+                        document.getElementById("water_heater_button").innerHTML = BUTTON_DICT[data.water_heater_status]
+                        document.getElementById("fan_button").innerHTML = BUTTON_DICT[data.fan_status]
+                        document.getElementById("vent_button").innerHTML = BUTTON_DICT[data.vent_status]
+                    }                 
                     document.getElementById("nursery_heater_status").innerHTML = '<strong>' + data.nursery_heater_status + '</strong>'
-                    document.getElementById("nursery_heater_button").innerHTML = BUTTON_DICT[data.nursery_heater_status]                
-                    document.getElementById("water_heater_button").innerHTML = BUTTON_DICT[data.water_heater_status]
                     document.getElementById("water_heater_status").innerHTML = '<strong>' + data.water_heater_status + '</strong>'
-                    document.getElementById("fan_status").innerHTML = '<strong>' + data.fan_status + '</strong>'
-                    document.getElementById("fan_button").innerHTML = BUTTON_DICT[data.fan_status]
-                    document.getElementById("vent_status").innerHTML = '<strong>' + data.vent_status + '</strong>'
-                    document.getElementById("vent_button").innerHTML = BUTTON_DICT[data.vent_status]
+                    document.getElementById("fan_status").innerHTML = '<strong>' + data.fan_status + '</strong>'                    
+                    document.getElementById("vent_status").innerHTML = '<strong>' + data.vent_status + '</strong>'  
+                    
+                    if (document.getElementById("water_pump_button")){
+                        document.getElementById("water_pump_button").innerHTML = BUTTON_DICT[data.water_pump_status]
+                        document.getElementById("garden_valve_button").innerHTML = BUTTON_DICT[data.garden_valve_status]
+                        document.getElementById("greenhouse_tree_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_tree_valve_status]
+                        document.getElementById("greenhouse_planter_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_planter_valve_status]
+
+                    }
                     document.getElementById("water_pump_status").innerHTML = '<strong>' + data.water_pump_status + '</strong>'
-                    document.getElementById("water_pump_button").innerHTML = BUTTON_DICT[data.water_pump_status]
                     document.getElementById("garden_valve_status").innerHTML = '<strong>' + data.garden_valve_status + '</strong>'
-                    document.getElementById("garden_valve_button").innerHTML = BUTTON_DICT[data.garden_valve_status]
                     document.getElementById("greenhouse_planter_valve_status").innerHTML = '<strong>' + data.greenhouse_planter_valve_status + '</strong>'
-                    document.getElementById("greenhouse_planter_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_planter_valve_status]
                     document.getElementById("greenhouse_tree_valve_status").innerHTML = '<strong>' + data.greenhouse_tree_valve_status + '</strong>'                       
-                    document.getElementById("greenhouse_tree_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_tree_valve_status]
                 })
         }
         
