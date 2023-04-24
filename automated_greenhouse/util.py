@@ -107,16 +107,39 @@ def set_pump_times(hour, minute, duration):
 
 
 NUMBER_OF_CHART_DATAPOINTS = 20
+AKDT_OFFSET = -8
 
-def get_date_time_labels():
-
+def get_greenhouse_date_time_labels():
     time_labels = [x.created_at for x in OutsideAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
     time_labels.reverse()
     result = []
     for time in time_labels:
-        result.append(str(time + timedelta(hours=-8))[6:16])
+        result.append(str(time + timedelta(hours=AKDT_OFFSET))[6:16])
     return json.dumps(result)
 
+def get_nursery_date_time_labels():
+    time_labels = [x.created_at for x in NurseryAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    time_labels.reverse()
+    result = []
+    for time in time_labels:
+        result.append(str(time + timedelta(hours=AKDT_OFFSET))[6:16])
+    return json.dumps(result)
+
+def get_humidity_date_time_labels():
+    time_labels = [x.created_at for x in Humidity.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    time_labels.reverse()
+    result = []
+    for time in time_labels:
+        result.append(str(time + timedelta(hours=AKDT_OFFSET))[6:16])
+    return json.dumps(result)
+
+def get_water_date_time_labels():
+    time_labels = [x.created_at for x in OutsideAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
+    time_labels.reverse()
+    result = []
+    for time in time_labels:
+        result.append(str(time + timedelta(hours=AKDT_OFFSET))[6:16])
+    return json.dumps(result)
 
 def get_historical_nursery_temps():
     historical_nursery_temps = [x.nursery_air_temp for x in NurseryAirTemp.objects.order_by('-id')[:NUMBER_OF_CHART_DATAPOINTS]]
