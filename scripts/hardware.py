@@ -64,18 +64,14 @@ def read_temp():
 def read_humidity():
     current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
     if(current_temp != None):
-        current_temp_f = current_temp * 1.8 + 32
-    else:
-        current_temp_f = NurseryAirTemp.objects.order_by('id').last().nursery_air_temp
-    if (current_humidity == None):
-        current_humidity = Humidity.objects.order_by('id').last().humidity
-    else:
-        pass
+        current_temp_f = current_temp * 1.8 + 32    
     current_temp_f = "%.1f" % current_temp_f
-    temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
-    humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
-    temp_data_to_send.save()
-    humidity_data_to_send.save()
+    # dscard bad sensor data
+    if(current_humidity < 100):
+        temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
+        humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
+        temp_data_to_send.save()
+        humidity_data_to_send.save()
 
 #function for handling all automatic mode logic
 def automatic_mode():
