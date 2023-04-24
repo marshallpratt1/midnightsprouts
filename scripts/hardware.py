@@ -35,8 +35,6 @@ temp_buffer = 2 #temp buffer for air and water temp
 humidity_buffer = 5 #humidity buffer
 HIGH_TEMP_THRESHOLD = 80 #vent if temp gets above 80
 HIGH_TEMP_TOGGLE = False
-HUMIDITY_TOGGLE = False
-
 
 sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/devices/28-030d979455e5/w1_slave']
 
@@ -125,23 +123,19 @@ def automatic_mode():
 
     #automatic vent toggle
     if(humidity_setpoint < humidity):
-        HIGH_TEMP_TOGGLE = True
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
         if(vent_status == False):
             toggle_vent()
-    elif(HUMIDITY_TOGGLE and (humidity_setpoint - humidity_buffer > humidity)):
-        HIGH_TEMP_TOGGLE = False
+    elif(humidity_setpoint - humidity_buffer > humidity)):        
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
         if(vent_status == True):
             toggle_vent()
     #toggle vent if it gets too hot    
     if(air_temp > HIGH_TEMP_THRESHOLD):
-        HIGH_TEMP_TOGGLE = True
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
         if(vent_status == False):
             toggle_vent()
-    elif(HIGH_TEMP_TOGGLE and (air_temp <= air_temp_setpoint)):
-        HIGH_TEMP_TOGGLE = False
+    elif((air_temp <= air_temp_setpoint)):
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
         if(vent_status == True):
             toggle_vent()
