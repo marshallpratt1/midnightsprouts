@@ -127,7 +127,7 @@ def automatic_mode():
         GPIO.output(VENT_TOGGLE, GPIO.HIGH)
         if(vent_status == False):
             toggle_vent()
-    elif(humidity_setpoint - humidity_buffer > humidity)):        
+    elif(humidity_setpoint - humidity_buffer > humidity):        
         GPIO.output(VENT_TOGGLE, GPIO.LOW)
         if(vent_status == True):
             toggle_vent()
