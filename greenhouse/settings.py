@@ -33,7 +33,7 @@ except KeyError as e:
     raise RuntimeError("Could not find SECRET_KEY in environment") from e
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['.midnightsprouts.us', '127.0.0.1']
 
