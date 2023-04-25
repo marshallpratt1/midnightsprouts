@@ -24,7 +24,7 @@
                 <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
+                <a class="nav-link" href="{% url 'errors' %}">Error Log</a>
               </li>
             </ul> 
             <div class="nav-item text-end">
@@ -66,7 +66,6 @@
 <!-- FOOTER -->
 <footer class="footer" style="padding: 5px;">
   <hr>
-    <h6>This is a stand in footer</h6></footer>
 </body>
 
 <script src="{% static 'automated_greenhouse/automated_greenhouse.js' %}"></script>

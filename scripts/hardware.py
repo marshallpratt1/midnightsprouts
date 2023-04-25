@@ -5,7 +5,7 @@ from datetime import datetime
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 from django.utils import timezone
-from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
+from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, SystemError
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, LastFrostGreenhouse
 from automated_greenhouse.util import *
@@ -36,6 +36,11 @@ humidity_buffer = 5 #humidity buffer
 HIGH_TEMP_THRESHOLD = 80 #vent if temp gets above 80
 STOP_HIGH_TEMP_THRESHOLD = 77 #stop venting at 77
 HIGH_TEMP_TOGGLE = False
+PROBE_MESSAGES = {
+    0: "There was an error with the Greenhouse Air Temperature Probe",
+    1: "There was an error with the Water Temperature Probe",
+}
+NURSERY_TEMP_ERROR_MESSAGE = "There was an error with the Nursery Temperature and Humidity Sensor"
 
 sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/devices/28-030d979455e5/w1_slave']
 
@@ -43,6 +48,7 @@ sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave', '/sys/bus/w1/dev
 #reads temp data from ds18b20 and saves it to database
 #this reads temperatures for water and greenhouse
 def read_temp():
+    id = 0
     try:
         for sensor_id, sensor_path in enumerate(sensor_paths):
             with open(sensor_path, 'r') as file:
@@ -63,22 +69,27 @@ def read_temp():
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
+            id += 1
     except:
-        print ("temp probe issue at ", timezone.now())
+        new_error = SystemError(error_message=PROBE_MESSAGES)
+        new_error.save()
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
 def read_humidity():
-    current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
-    if(current_temp != None):
-        current_temp_f = current_temp * 1.8 + 32    
-    current_temp_f = "%.1f" % current_temp_f
-    # dscard bad sensor data
-    if(current_humidity < 100):
-        temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
-        humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
-        temp_data_to_send.save()
-        humidity_data_to_send.save()
-
+    try:
+        current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
+        if(current_temp != None):
+            current_temp_f = current_temp * 1.8 + 32    
+        current_temp_f = "%.1f" % current_temp_f
+        # dscard bad sensor data
+        if(current_humidity < 100):
+            temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
+            humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
+            temp_data_to_send.save()
+            humidity_data_to_send.save()
+    except:
+        new_error = SystemError(error_message=NURSERY_TEMP_ERROR_MESSAGE)
+        new_error.save()
 #function for handling all automatic mode logic
 def automatic_mode():
     #initilize objects status and setpoints by checking last database entry

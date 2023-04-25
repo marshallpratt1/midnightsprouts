@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, LastFrostGreenhouse
-from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
+from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, SystemError
 from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 from django.db import IntegrityError
 from django.urls import reverse_lazy, reverse
@@ -157,9 +157,12 @@ def index(request):
         'historical_water_temps': util.get_historical_water_temps(),
     })
 
+def system_errors(request):
+    return render (request, 'automated_greenhouse/system_errors.html' ,{
+        'error_messages' : SystemError.objects.all().order_by('-id')
+    })
+
 # register new user
-
-
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
