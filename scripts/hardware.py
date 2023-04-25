@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 from django.utils import timezone
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
-from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint
+from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, LastFrostGreenhouse
 from automated_greenhouse.util import *
 
 GPIO.setmode(GPIO.BCM)
@@ -57,6 +57,9 @@ def read_temp():
                 if sensor_id == 0:
                     data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
+                    if current_temp <= 32: 
+                        new_frost_time = LastFrostGreenhouse.objects.get_or_create(id = 0)
+                        new_frost_time.save()
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
@@ -105,7 +108,7 @@ def automatic_mode():
         if(air_heater_status == True):
             toggle_nursery_heater()
 
-    #automatic water heater toggle
+    #automatic water heater toggle, don't turn on pump if water is freezing
     if(water_temp_setpoint > water_temp):
         GPIO.output(WATER_HEATER, GPIO.HIGH)
         if(water_heater_status == False):
@@ -144,9 +147,11 @@ def automatic_mode():
     #THESE RUN OFF TIMERS
     #automatic pump toggle
     if(NOW_TIME.hour == pump.start_hour and NOW_TIME.minute >= pump.start_minute and NOW_TIME.minute < pump.start_minute + pump.duration):
-        GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
-        if(pump.pump_on == False):
-            toggle_pump()
+        #safety check, don't turn on pump if water is freezing
+        if (water_temp > 32):
+            GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
+            if(pump.pump_on == False):
+                toggle_pump()
     else:
         GPIO.output(PUMP_TOGGLE, GPIO.LOW)
         if(pump.pump_on == True):
