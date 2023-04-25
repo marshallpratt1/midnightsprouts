@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
+from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, LastFrostGreenhouse
 from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
 from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 from django.db import IntegrityError
@@ -103,7 +103,7 @@ def index(request):
     # automatic vs manual controls
     automatic = SystemStatus.objects.order_by('-id')[0].automatic
     system_message = 'Are you sure you want to switch the sytem to Manual?' if automatic else 'Are you sure you want to switch the sytem to Automatic?'
-
+    last_frost_greenhouse, created = LastFrostGreenhouse.objects.get_or_create(id=0)
     # the context fetches all of the most recent database entries for website render
     return render(request, 'automated_greenhouse/index.html', {
         'air_form': AirTempForm,
@@ -125,6 +125,7 @@ def index(request):
         'automatic': automatic,
         'system_message': system_message,
         'greenhouse_air_temp_object': OutsideAirTemp.objects.last(),
+        'last_frost_greenhouse' : last_frost_greenhouse.created_at,
         'water_temp_object': WaterTemp.objects.last(),
         'nursery_air_temp_object': NurseryAirTemp.objects.last(),
         'humidity_object': Humidity.objects.last(),

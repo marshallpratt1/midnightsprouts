@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from datetime import timedelta, datetime
 # Create your models here.
-
+AKDT_OFFSET = -8
 
 class User(AbstractUser):
     pass
@@ -20,7 +20,13 @@ class OutsideAirTemp(models.Model):
 
     def __str__(self) -> str:
         return f"{self.outside_air_temp} °F at {self.created_at}"
+    
+class LastFrostGreenhouse(models.Model):
+    created_at = models.DateTimeField(auto_now=True)
 
+    #def __str__(self) -> str: # return just month and day
+     #   return str(self.created_at.date())
+        #return f"{str(self.created_at + timedelta(hours=AKDT_OFFSET))[6:16]}"
 
 class WaterTemp(models.Model):
     water_temp = models.FloatField(default=0.0)
