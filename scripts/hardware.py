@@ -76,8 +76,6 @@ def read_temp():
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
 def read_humidity():
-<<<<<<< HEAD
-=======
     try:
         current_humidity, current_temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, DHT_DATA_PIN)
         if(current_temp != None):
@@ -92,7 +90,6 @@ def read_humidity():
     except:
         new_error = SystemError(error_message=NURSERY_TEMP_ERROR_MESSAGE)
         new_error.save()
->>>>>>> dba9a67221103fc817a84295cb2ea3131d1ba0ac
 #function for handling all automatic mode logic
 def automatic_mode():
     #initilize objects status and setpoints by checking last database entry
