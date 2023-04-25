@@ -125,7 +125,7 @@ def index(request):
         'automatic': automatic,
         'system_message': system_message,
         'greenhouse_air_temp_object': OutsideAirTemp.objects.last(),
-        'last_frost_greenhouse' : last_frost_greenhouse.created_at,
+        'last_frost_greenhouse' : last_frost_greenhouse.created_at.date(),
         'water_temp_object': WaterTemp.objects.last(),
         'nursery_air_temp_object': NurseryAirTemp.objects.last(),
         'humidity_object': Humidity.objects.last(),
