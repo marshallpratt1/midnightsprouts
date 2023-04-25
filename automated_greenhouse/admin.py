@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, LastFrostGreenhouse
-from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
+from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, SystemError
 from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 
 
@@ -24,3 +24,4 @@ admin.site.register(AirTempSetpoint)
 admin.site.register(WaterTempSetpoint)
 admin.site.register(HumiditySetpoint)
 admin.site.register(LastFrostGreenhouse)
+admin.site.register(SystemError)
