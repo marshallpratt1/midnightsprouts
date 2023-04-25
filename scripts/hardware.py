@@ -69,8 +69,9 @@ def read_temp():
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
         except:
-            new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
-            new_error.save()
+            pass
+            #new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
+            #new_error.save()
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
 def read_humidity():
