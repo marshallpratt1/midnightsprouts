@@ -110,6 +110,7 @@ greenhouseenv/
 ENV/
 env.bak/
 venv.bak/
+greenhouseenv/
 
 # Spyder project settings
 .spyderproject
