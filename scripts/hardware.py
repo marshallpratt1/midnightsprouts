@@ -62,13 +62,18 @@ def read_temp():
                 if sensor_id == 0:
                     data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
+<<<<<<< HEAD
                     if current_temp <= 32:
+=======
+                    new_error = SystemError(error_message="about to check for low temp")
+                    new_error.save()
+                    if current_temp <= 32: 
+                        new_error = SystemError(error_message="about to create last frost object")
+                        new_error.save()
+>>>>>>> e0856ec650c04df2ce6630865f3a1f90a440248e
                         new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
-                        if created:
-                            new_frost_time.save()
-                        else:
-                            new_frost_time.created_at = timezone.now()
-                            new_frost_time.save()
+                        new_frost_time.created_at = timezone.now()
+                        new_frost_time.save()
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
