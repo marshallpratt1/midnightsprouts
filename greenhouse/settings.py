@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from django.utils import timezone
 import environ
 import os
 
@@ -32,9 +33,9 @@ except KeyError as e:
     raise RuntimeError("Could not find SECRET_KEY in environment") from e
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['.midnightsprouts.us']
+ALLOWED_HOSTS = ['.midnightsprouts.us', '127.0.0.1']
 
 AUTH_USER_MODEL = 'automated_greenhouse.User'
 
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Anchorage'
 
 USE_I18N = True
 

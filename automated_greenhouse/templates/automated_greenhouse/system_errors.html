@@ -1,0 +1,18 @@
+{% extends "automated_greenhouse/layout.html" %}
+{% block main %}
+    <h2>Error Message Log</h2>
+<hr>
+    {% if error_messages %}
+
+    <ol>
+        {% for message in error_messages %}
+        <li><loud>Message: "{{ message.error_message }}"</loud>   occured at: {{ message.created_at }}</li>
+        {% endfor %}
+    </ol>
+
+    {% else %}
+    <h3>There are no messages to display</h3>
+
+    {% endif %}
+
+{% endblock %}

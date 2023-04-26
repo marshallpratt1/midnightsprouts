@@ -4,7 +4,7 @@
 
     <!-- Start: System Status -->
     <hr>
-    <h3>Systems Status: {% if automatic %} Automatic {% else %} Manual {% endif %}<br><br>
+    <h3 id="system_status">System Status: {% if automatic %}Automatic{% else %}Manual{% endif %}</h3><br>
         {% if user.is_superuser %}
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#statusModal">
                 Change Status
@@ -39,17 +39,15 @@
                 <div class="col col-md-2">  
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Nursery Air Temp: </p>
-                        <p class="lead" style="font-size: xx-large;"><strong>{{ nursery_air_temp }}F</strong></p>
-                        <p class="lead">Outside Air Temp: </p>
-                        <p class="lead" style="font-size: xx-large;"><strong>{{ outside_air_temp }}F</strong></p>
+                        <p class="lead" id="nursery_temp" style="font-size: xx-large;"><strong>{{ nursery_air_temp_object.nursery_air_temp }}F</strong></p>
                     </div>
                 </div>                
                 <div class="col col-md-2">
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Nursery Air Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ air_temp_setpoint }}F</strong></p>
-                        {% if user.is_superuser %}
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#airTempModal">
+                        {% if user.is_superuser and automatic %}
+                            <button type="button" id="nursery_air_temp_setpoint" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#airTempModal">
                                 Change Setpoint
                             </button>
                         {% endif %}
@@ -77,14 +75,39 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card" style="padding: 2px;">
-                        <div>
-                            <canvas id="tempChart"></canvas>
-                        </div>                        
+                        <canvas  style="height: 200px;" id="tempChart"></canvas>
                     </div>
                 </div>
         </div>
     </div>
     <!-- End: Nursery Air Temp -->
+
+    <!-- Start: Greenhouse Air Temp -->
+    <div class="card" style="padding: 5px;">
+        <div class="row align-items-start"  style="border: 2px;">
+                <div class="col col-md-2">  
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Greenhouse Air Temp: </p>
+                        <p class="lead" id="greenhouse_temp" style="font-size: xx-large;"><strong>{{ greenhouse_air_temp_object.outside_air_temp }}F</strong></p>
+                    </div>
+                </div> 
+
+                <div class="col col-md-2">
+                    <div class="card" style="padding: 2px;">
+                        <p class="lead">Last Greenhouse Frost: </p>
+                        <p class="lead" id="last_frost_greenhouse" style="font-size: x-large;"><strong>{{ last_frost_greenhouse }}</strong></p>
+                    </div>
+
+                </div>              
+                
+                <div class="col-md-8">
+                    <div class="card" style="padding: 2px;">
+                        <canvas id="greenhouse_temp_chart"  style="height: 200px;"></canvas>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- End: Greenhouse Air Temp -->
 
     <!-- Start: Nursery Humidity -->
     <div class="card" style="padding: 5px; margin-top: 5px;">
@@ -92,15 +115,15 @@
                 <div class="col col-md-2">  
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Nursery Humidity: </p>
-                        <p class="lead" style="font-size: xx-large;"><strong>{{ humidity }}%</strong></p>
+                        <p class="lead" id="nursery_humidity" style="font-size: xx-large;"><strong>{{ humidity_object.humidity }}%</strong></p>
                     </div>
                 </div>                
                 <div class="col col-md-2">
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Humidity Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ humidity_setpoint }}%</strong></p>
-                        {% if user.is_superuser %}
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#humidityModal">
+                        {% if user.is_superuser and automatic %}
+                            <button type="button" id="nursery_humidity_setpoint_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#humidityModal">
                                 Change Setpoint
                             </button>
                         {% endif %}
@@ -129,7 +152,7 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card" style="padding: 2px;">
-                        <canvas id="humidityChart" style="height: 200px;"></canvas>                        
+                        <canvas id="humidityChart"  style="height: 200px;"></canvas>                        
                     </div>
                 </div>
         </div>
@@ -142,7 +165,7 @@
                 <div class="col col-md-2">  
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Water Temp: </p>
-                        <p class="lead" style="font-size: xx-large;"><strong>{{ water_temp }}F</strong></p>
+                        <p class="lead" id="water_temp" style="font-size: xx-large;"><strong>{{ water_temp_object.water_temp }}F</strong></p>
                         <p class="lead">Water Level: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{% if water_level %} OK {% else %} LOW {% endif %}</strong></p>                    
                     </div>
@@ -151,8 +174,8 @@
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Water Temp Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ water_temp_setpoint }}F</strong></p>
-                        {% if user.is_superuser %}
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterModal">
+                        {% if user.is_superuser and automatic %}
+                            <button type="button" id="water_temp_setpoint_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterModal">
                                 Change Setpoint
                             </button>
                         {% endif %}
@@ -196,12 +219,12 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Nursery Heater: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if air_heater_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    <p class="lead" id="nursery_heater_status" style="font-size: xx-large;"><strong>{% if air_heater_status %}ON{% else %}OFF{% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %}    
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nurseryHeaterModal">
-                                {% if air_heater_status %} Turn Off {% else %} Turn On {% endif %}
-                            </button>
+                            <button type="button" id="nursery_heater_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nurseryHeaterModal">
+                                {% if air_heater_status %}Turn OFF{% else %}Turn ON{% endif %}
+                            </button>                       
                         {% endif %}
                     {% endif %}                    
                     <div class="modal fade" id="nurseryHeaterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -231,13 +254,13 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Water Heater: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if water_heater_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    <p class="lead" id="water_heater_status" style="font-size: xx-large;"><strong>{% if water_heater_status %}ON{% else %}OFF{% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterHeaterModal">
-                                {% if water_heater_status %} Turn Off {% else %} Turn On {% endif %}
+                            <button type="button" id="water_heater_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterHeaterModal">
+                                {% if water_heater_status %}Turn OFF{% else %}Turn ON{% endif %}
                             </button>
-                        {% endif %}
+                        {% endif %} 
                     {% endif %}
                     <div class="modal fade" id="waterHeaterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -258,92 +281,23 @@
                         </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <!-- End: Water Heater -->
-
-            <!-- Start: Water Pump -->
-            <div class="col col-md-2">
-                <div class="card" style="padding: 2px;">
-                    <p class="lead">Water Pump: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if pump_status %} ON {% else %} OFF {% endif %}</strong></p>
-                    {% if user.is_superuser %}
-                        {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpModal">
-                                {% if pump_status %} Turn Off {% else %} Turn On {% endif %}
-                            </button>
-                        {% endif %}
-                    {% endif %}
-                    <div class="modal fade" id="waterPumpModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action = "{% url 'index' %}" method="post" id = "water_pump_form", name="water_pump_form">
-                                    {% csrf_token %}                
-                                    {{ water_pump_form }}
-                                    <hr>
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
-                                </form>
-                            </div>                                
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>   
-            <!-- End: Water Pump -->
-
-            <!-- Start: Drain Valve -->
-            <!-- TODO!! finish forms -->
-            <div class="col col-md-2">
-                <div class="card" style="padding: 2px;">
-                    <p class="lead">Drain Valve: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if valve1_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
-                    {% if user.is_superuser %}
-                        {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#drainValveModal">
-                                {% if valve1_status %} Close Vavle{% else %} Open Valve {% endif %}
-                            </button>
-                        {% endif %}
-                    {% endif %}
-                    <div class="modal fade" id="drainValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Drain Valve</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action = "{% url 'index' %}" method="post" id = "drain_valve_form", name="drain_valve_form">
-                                    {% csrf_token %}                
-                                    {{ drain_valve_form }}
-                                    <hr>
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
-                                </form>
-                            </div>                                
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>   
-            <!-- End: Drain Valve -->
-
+  
             <!-- Start: Fan -->
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Fan: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if fan_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    <p class="lead" id="fan_status" style="font-size: xx-large;"><strong>{% if fan_status %} ON {% else %} OFF {% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fanModal">
-                                {% if fan_status %} Turn Off {% else %} Turn On {% endif %}
+                            <button type="button" id="fan_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fanModal">
+                                {% if fan_status %}Turn Off{% else %}Turn On{% endif %}
                             </button>
                         {% endif %}
+                        
                     {% endif %}
                     <div class="modal fade" id="fanModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -372,11 +326,11 @@
             <div class="col col-md-2">
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Ventilation Fan: </p>
-                    <p class="lead" style="font-size: xx-large;"><strong>{% if vent_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    <p class="lead" id="vent_status" style="font-size: xx-large;"><strong>{% if vent_status %}ON{% else %}OFF{% endif %}</strong></p>
                     {% if user.is_superuser %}
                         {% if automatic == False %} 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ventModal">
-                                {% if vent_status %} Turn Off {% else %} Turn On {% endif %}
+                            <button type="button" id="vent_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ventModal">
+                                {% if vent_status %}Turn Off{% else %}Turn On{% endif %}
                             </button>
                         {% endif %}
                     {% endif %}
@@ -403,6 +357,252 @@
             </div>   
             <!-- End: vent -->
 
+            <!-- Start: Water Pump -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Water Pump:</p>
+                    <p class="lead" id="water_pump_status" style="font-size: xx-large;"><strong>{% if pump_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic %} 
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpTimeModal">
+                            Set Pump Times
+                        </button>                    
+                        {% else %}
+                            <button type="button" id="water_pump_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpModal">
+                                {% if pump_status %}Turn Off{% else %}Turn On{% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="waterPumpModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Pump</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "water_pump_form", name="water_pump_form">
+                                    {% csrf_token %}                
+                                    {{ water_pump_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set pump on time and duration -->
+                    <div class="modal fade" id="waterPumpTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Pump Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "pump_time_form", name="pump_time_form">
+                                    {% csrf_token %}    
+                                    <table>
+                                    {{ pump_time_form.as_table }}
+                                    </table>            
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Water Pump -->
+           
+            <!-- Start: Garden Valve -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Garden Valve:</p>
+                    <p class="lead" id="garden_valve_status" style="font-size: xx-large;"><strong>{% if garden_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic %}
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %}                     
+                            <button type="button" id="garden_valve_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveModal">
+                                {% if garden_valve_status %}Close Valve{% else %}Open Valve{% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="gardenValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Garden Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "garden_valve_form", name="garden_valve_form">
+                                    {% csrf_token %}                
+                                    {{ garden_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="gardenValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Garden Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "garden_valve_time_form", name="garden_valve_time_form">
+                                    {% csrf_token %}  
+                                    <table>
+                                        {{ garden_valve_time_form.as_table }}
+                                    </table>             
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Garden Valve -->
+
+            <!-- Start: Greenhouse Planter Valve -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Greenhouse Planter Valve: </p>
+                    <p class="lead" id="greenhouse_planter_valve_status" style="font-size: xx-large;"><strong>{% if greenhouse_planter_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic %}
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %}     
+                        <button type="button" id="greenhouse_planter_valve_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveModal">
+                            {% if greenhouse_planter_valve_status %}Close Valve{% else %}Open Valve{% endif %}
+                        </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="greenhousePlanterValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Drain Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_planter_valve_form", name="greenhouse_planter_valve_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_planter_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="greenhousePlanterValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Greenhouse Planter Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_planter_valve_time_form", name="greenhouse_planter_valve_time_form">
+                                    {% csrf_token %}     
+                                    <table>
+                                        {{ greenhouse_planter_valve_time_form.as_table }}
+                                    </table>
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Greenhouse Planter Valve -->
+
+            <!-- Start: Greenhouse Tree Valve -->
+            <div class="col col-md-2">
+                <div class="card" style="padding: 2px;">
+                    <p class="lead">Greenhouse Tree Valve: </p>
+                    <p class="lead" id="greenhouse_tree_valve_status" style="font-size: xx-large;"><strong>{% if greenhouse_tree_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% if user.is_superuser %}
+                        {% if automatic %}
+                        <button type="button" id="greenhouse_tree_valve_time_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveTimeModal">
+                            Set Valve Times
+                        </button>
+                        {% else %} 
+                            <button type="button" id="greenhouse_tree_valve_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveModal">
+                                {% if greenhouse_tree_valve_status %}Close Valve{% else %}Open Valve{% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="modal fade" id="greenhouseTreeValveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Greenhouse Tree Valve</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_tree_valve_form", name="greenhouse_tree_valve_form">
+                                    {% csrf_token %}                
+                                    {{ greenhouse_tree_valve_form }}
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                    <!-- set valve open time and duration -->
+                    <div class="modal fade" id="greenhouseTreeValveTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Set Greenhouse Tree Valve Times</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action = "{% url 'index' %}" method="post" id = "greenhouse_tree_valve_time_form", name="greenhouse_tree_valve_time_form">
+                                    {% csrf_token %}   
+                                    <table>
+                                        {{ greenhouse_tree_valve_time_form.as_table }}
+                                    </table> 
+                                    <hr>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                </form>
+                            </div>                                
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- End: Greenhouse Tree Valve -->
+
+
+            
         </div>
     </div>
     <!-- End: Equipment Status -->
@@ -411,52 +611,75 @@
    
 <!-- BEGIN CHARTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Begin Temp Chart Script -->
+    <!-- Begin Nursery Temp Chart Script -->
     <script>
+        var last_nursery_temp_id = '{{nursery_air_temp_object.id}}'
         const temp = document.getElementById('tempChart');
-        console.log('{{temps_labels}}')
-        console.log(typeof('{{temps_labels}}'))
-        label = JSON.parse("{{temps_labels}}".replace(/(&quot\;)/g,"\"")),
-        console.log(label)
-      
-        new Chart(temp, {
-          backgroundColor: 'green',
+        
+        const nursery_temp_chart = new Chart(temp, {
+        backgroundColor: 'green',
           type: 'line',
           data: {
-            labels: label,
+            labels: JSON.parse("{{nursery_temp_time_labels}}".replace(/(&quot\;)/g,"\"")),
             datasets: [{
               label: 'Nursery Temp: F',
               data: JSON.parse("{{historical_nursery_temps}}"),
               borderWidth: 1,
-              backgroundColor: 'green',
-              borderColor: 'green',
-            },
-            {
-              label: 'Outside Temp: F',
-              data: JSON.parse("{{historical_outside_temps}}"),
-              borderWidth: 1,
-              borderColor: 'gray',
               backgroundColor: 'gray',
-            }]
+              borderColor: 'gray',
+            },
+        ]
           },
           options: {           
             scales: {
               y: {
-                beginAtZero: false
+                beginAtZero: false,
+                grace : 5,
+              }
+            }
+        }
+        });     
+    </script>
+    <!-- End Nursery Chart Script -->
+
+    <!-- Begin Greenhouse Temp Chart Script -->
+    <script>
+        var last_greenhouse_air_temp_id = '{{greenhouse_air_temp_object.id}}'    
+        const greenhouse_temp = document.getElementById('greenhouse_temp_chart');
+        const greenhouse_temp_chart = new Chart(greenhouse_temp, {
+        backgroundColor: 'green',
+        type: 'line',
+        data: {
+            labels: JSON.parse("{{greenhouse_temp_time_labels}}".replace(/(&quot\;)/g,"\"")),
+            datasets: [
+            {
+            label: 'Greenhouse Temp: F',
+            data: JSON.parse("{{historical_outside_temps}}"),
+            borderWidth: 1,
+            borderColor: 'gray',
+            backgroundColor: 'gray',
+            }]
+        },
+        options: {           
+            scales: {
+              y: {                
+                beginAtZero: false,
+                grace: 5                    
               }
             }
           }
-        });
+        });     
     </script>
-    <!-- End Temp Chart Script -->
+    <!-- End Greenhouse Chart Script -->
 
     <!-- Begin Humidity Chart Script -->
-    <script>
+    <script>     
+        var last_humidity_id = '{{humidity_object.id}}'
         const humidity = document.getElementById('humidityChart');
-        new Chart(humidity, {
+        const humidity_chart = new Chart(humidity, {
           type: 'line',
           data: {
-            labels: label,
+            labels: JSON.parse("{{humidity_time_labels}}".replace(/(&quot\;)/g,"\"")),
             datasets: [
             {
               label: 'Humidity: %',
@@ -469,23 +692,24 @@
           options: {           
             scales: {
               y: {
-                beginAtZero: false
+                beginAtZero: false,
+                grace : 5
               }
             }
           }
         });
-      </script>
+    </script>
     <!-- End Humidity Chart Script -->
       
     <!-- Begin Water Temp Chart Script -->
     <script>
-        const water_temp = document.getElementById('waterTempChart');
-      
-        new Chart(water_temp, {
+        var last_water_temp_id = '{{water_temp_object.id}}'
+        const water_temp = document.getElementById('waterTempChart');      
+        const water_temp_chart = new Chart(water_temp, {
           backgroundColor: 'gray',
           type: 'line',
           data: {
-            labels: label,
+            labels: JSON.parse("{{water_temp_time_labels}}".replace(/(&quot\;)/g,"\"")),
             datasets: [{
               label: 'Water Temp: F',
               data: JSON.parse("{{historical_water_temps}}"),
@@ -497,7 +721,8 @@
           options: {           
             scales: {
               y: {
-                beginAtZero: false
+                beginAtZero: false,
+                grace: 5 
               }
             }
           }
@@ -506,5 +731,147 @@
     <!-- End Water Temp Chart Script -->
 <!-- END CHARTS -->
 
+<!--BEGIN AUTO UPDATE-->    
+    <script>
+        // update the sensor data and user options every 5 seconds
+        setInterval(display_data, 5000);
+
+        // call all interval function from here
+        function display_data(){
+            display_nursery_temp()
+            display_greenhouse_temp()
+            display_water_temp()
+            display_nursery_humidity()
+            update_equipment_status()
+            update_system_status()
+        }
+        
+        // get and display most recent nursery temperature
+        function display_nursery_temp() {
+            fetch('/api/api_get_nursery_temp')            
+            .then(response => response.json())
+            .then(data => { 
+                document.getElementById("nursery_temp").innerHTML = '<strong>' + data.nursery_temp + 'F' + '<strong>';
+                if (last_nursery_temp_id != data.nursery_temp_id){
+                    last_nursery_temp_id = data.nursery_temp_id
+                    update_chart(nursery_temp_chart, data.nursery_temp_timestamp, data.nursery_temp)
+                }
+            });
+        }
+
+        // get and display most recent greenhosue temperature
+        function display_greenhouse_temp() {
+            fetch('/api/api_get_greenhouse_temp')            
+            .then(response => response.json())
+            .then(data => { 
+                document.getElementById("greenhouse_temp").innerHTML = '<strong>' + data.greenhouse_temp + 'F' + '<strong>';
+                if (last_greenhouse_air_temp_id != data.greenhouse_temp_id){
+                    last_greenhouse_air_temp_id = data.greenhouse_temp_id
+                    update_chart(greenhouse_temp_chart, data.greenhouse_temp_timestamp, data.greenhouse_temp)
+                }
+            });
+        }
+
+        // get and display most recent water temperature
+        function display_water_temp() {
+            fetch('/api/api_get_water_temp')            
+            .then(response => response.json())
+            .then(data => { 
+                    document.getElementById("water_temp").innerHTML = '<strong>' + data.water_temp + 'F' + '<strong>';
+                    if (last_water_temp_id != data.water_temp_id){
+                        last_water_temp_id = data.water_temp_id
+                        update_chart(water_temp_chart, data.water_temp_timestamp, data.water_temp)
+                }
+            });
+        }
+
+        // get and display most recent nursery humidity 
+        function display_nursery_humidity() {
+            fetch('/api/api_get_nursery_humidity')            
+            .then(response => response.json())
+            .then(data => { 
+                document.getElementById("nursery_humidity").innerHTML = '<strong>' + data.nursery_humidity + '%' + '<strong>';
+                if (last_humidity_id != data.nursery_humidity_id){
+                    last_humidity_id = data.nursery_humidity_id
+                    update_chart(humidity_chart, data.nursery_humidity_timestamp, data.nursery_humidity)
+                }
+            });
+        }
+
+        // update the associated charts, shift them to the left to accomodate the new value
+        function update_chart(chart, label, data) {
+            chart.data.labels.push(label);
+            chart.data.labels.shift();
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(data);
+                dataset.data.shift();
+            });
+            chart.update();
+}
+
+        // get and display the most recent values for pumps, fans, etc...
+        function update_equipment_status(){
+            const BUTTON_DICT = {
+                'ON' : 'Turn Off',
+                'OFF' : 'Turn On',
+                'CLOSED' : "Open Valve",
+                'OPEN' : 'Close Valve',
+            }
+            fetch('/api/api_get_equipment_status')
+            .then(response => response.json())
+            .then(data=> {
+                    
+                    if (document.getElementById("nursery_heater_button")){
+                        document.getElementById("nursery_heater_button").innerHTML = BUTTON_DICT[data.nursery_heater_status]
+                        document.getElementById("water_heater_button").innerHTML = BUTTON_DICT[data.water_heater_status]
+                        document.getElementById("fan_button").innerHTML = BUTTON_DICT[data.fan_status]
+                        document.getElementById("vent_button").innerHTML = BUTTON_DICT[data.vent_status]
+                    }                 
+                    document.getElementById("nursery_heater_status").innerHTML = '<strong>' + data.nursery_heater_status + '</strong>'
+                    document.getElementById("water_heater_status").innerHTML = '<strong>' + data.water_heater_status + '</strong>'
+                    document.getElementById("fan_status").innerHTML = '<strong>' + data.fan_status + '</strong>'                    
+                    document.getElementById("vent_status").innerHTML = '<strong>' + data.vent_status + '</strong>'  
+                    
+                    if (document.getElementById("water_pump_button")){
+                        document.getElementById("water_pump_button").innerHTML = BUTTON_DICT[data.water_pump_status]
+                        document.getElementById("garden_valve_button").innerHTML = BUTTON_DICT[data.garden_valve_status]
+                        document.getElementById("greenhouse_tree_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_tree_valve_status]
+                        document.getElementById("greenhouse_planter_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_planter_valve_status]
+
+                    }
+                    document.getElementById("water_pump_status").innerHTML = '<strong>' + data.water_pump_status + '</strong>'
+                    document.getElementById("garden_valve_status").innerHTML = '<strong>' + data.garden_valve_status + '</strong>'
+                    document.getElementById("greenhouse_planter_valve_status").innerHTML = '<strong>' + data.greenhouse_planter_valve_status + '</strong>'
+                    document.getElementById("greenhouse_tree_valve_status").innerHTML = '<strong>' + data.greenhouse_tree_valve_status + '</strong>'                       
+                })
+        }
+        
+        // handle system status, if there is a system change then all wathcing superusers 
+        // will be alerted and rebooted to reflect the new system status
+        function update_system_status(){
+            fetch('/api/api_get_system_status')
+            .then(response => response.json())
+            .then( data =>{
+                //the system status should rarely change, all other superusers should be alerted if they are logged in
+                
+                if ('{{user.is_superuser}}' == 'True'){
+                    if (document.getElementById("system_status").innerHTML == "System Status: Automatic" && data.system_status != 'Automatic'){
+                        alert("Someone has changed the system status.")
+                        window.location.href = window.location.href;
+                    }
+                    if (document.getElementById("system_status").innerHTML == "System Status: Manual" && data.system_status != 'Manual'){
+                        alert("Someone has changed the system status.")
+                        window.location.href = window.location.href;
+                    }                       
+                }  
+                else{
+                    document.getElementById("system_status").innerHTML = "System Status: " + data.system_status
+                }  
+            }
+            )
+        }
+
+    </script>
+<!--END AUTO UPDATE-->
 
 {% endblock %}

@@ -15,3 +15,7 @@
     border-color: black;
     background-color: aqua;
 }
+
+button:disabled{
+  background-color: transparent;
+}
