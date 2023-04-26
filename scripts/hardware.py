@@ -62,9 +62,12 @@ def read_temp():
                 if sensor_id == 0:
                     data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
-                    if current_temp <= 32: 
-                        new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 1)
-                        new_frost_time.save()
+                    if current_temp <= 32:
+                        new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
+                        if created:
+                            new_frost_time.save()
+                        else:
+                            new_frost_time.update()
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
