@@ -106,7 +106,7 @@ def set_pump_times(hour, minute, duration):
     new_pump_status.save()
 
 
-NUMBER_OF_CHART_DATAPOINTS = 200
+NUMBER_OF_CHART_DATAPOINTS = 100
 AKDT_OFFSET = -8
 
 def get_greenhouse_date_time_labels():

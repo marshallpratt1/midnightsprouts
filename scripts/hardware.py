@@ -62,9 +62,7 @@ def read_temp():
                 if sensor_id == 0:
                     data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
-                    new_error = SystemError(error_message="about to check for low temp")
-                    new_error.save()
-                    if current_temp <= 32: 
+                    if (float(data_to_send.outside_air_temp) <= 32): 
                         new_error = SystemError(error_message="about to create last frost object")
                         new_error.save()
                         new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
@@ -73,9 +71,11 @@ def read_temp():
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
-        except:            
-            new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
-            new_error.save()
+        except Exception as e:            
+             new_error = SystemError(error_message = e)
+             new_error.save()
+             new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
+             new_error.save()
             
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
@@ -97,11 +97,11 @@ def read_humidity():
 #function for handling all automatic mode logic
 def automatic_mode():
     #initilize objects status and setpoints by checking last database entry
-    air_temp_setpoint = AirTempSetpoint.objects.order_by('id').last().air_temp_setpoint
-    air_temp = NurseryAirTemp.objects.order_by('id').last().nursery_air_temp
-    air_heater_status = AirHeaterStatus.objects.order_by('id').last().air_heater_on
-    water_temp_setpoint = WaterTempSetpoint.objects.order_by('id').last().water_temp_setpoint
-    water_temp = WaterTemp.objects.order_by('id').last().water_temp
+    air_temp_setpoint = AirTempSetpoint.objects.last().air_temp_setpoint
+    air_temp = NurseryAirTemp.objects.last().nursery_air_temp
+    air_heater_status = AirHeaterStatus.objects.last().air_heater_on
+    water_temp_setpoint = WaterTempSetpoint.objects.last().water_temp_setpoint
+    water_temp = WaterTemp.objects.last().water_temp
     water_heater_status = WaterHeaterStatus.objects.order_by('id').last().water_heater_on
     fan_status = FanStatus.objects.order_by('id').last().fan_on
     humidity_setpoint = HumiditySetpoint.objects.order_by('id').last().humidity_setpoint
