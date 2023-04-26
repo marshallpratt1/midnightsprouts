@@ -63,15 +63,15 @@ def read_temp():
                     data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
                     if current_temp <= 32: 
-                        new_frost_time = LastFrostGreenhouse.objects.get_or_create(id = 0)
+                        new_frost_time = LastFrostGreenhouse.objects.get_or_create(id = 1)
                         new_frost_time.save()
                 elif sensor_id == 1:
                     data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
                     data_to_send.save()
-        except:
-            pass
-            #new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
-            #new_error.save()
+        except:            
+            new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
+            new_error.save()
+            
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
 def read_humidity():
