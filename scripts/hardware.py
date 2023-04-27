@@ -57,25 +57,22 @@ def read_temp():
             position = lines[1].find('t=')
             temp = float(lines[1][position+2:]) / 1000.0
             temp_f = temp * 1.8 + 32
-            current_temp = "%.1f" % temp_f
-            if current_temp is not None:
-                if sensor_id == 0:
-                    data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
-                    data_to_send.save()
-                    if (float(data_to_send.outside_air_temp) <= 32): 
-                        new_error = SystemError(error_message="about to create last frost object")
-                        new_error.save()
-                        new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
-                        new_frost_time.created_at = timezone.now()
-                        new_frost_time.save()
-                elif sensor_id == 1:
-                    data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
-                    data_to_send.save()
+            current_temp = "%.1f" % temp_f            
+            if sensor_id == 0:
+                data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
+                data_to_send.save()
+                if (float(data_to_send.outside_air_temp) <= 32):                         
+                    new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
+                    new_frost_time.created_at = timezone.now()
+                    new_frost_time.save()
+            elif sensor_id == 1:
+                data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
+                data_to_send.save()
         except Exception as e:            
-             new_error = SystemError(error_message = e)
-             new_error.save()
-             new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
-             new_error.save()
+            new_error = SystemError(error_message = e)
+            new_error.save()
+            new_error = SystemError(error_message=PROBE_MESSAGES[sensor_id])
+            new_error.save()
             
 #reads humidity and temp data from DHT11 and saves it to database
 #this reads temperature and humiditity for inside the nursery
@@ -91,7 +88,9 @@ def read_humidity():
             humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
             temp_data_to_send.save()
             humidity_data_to_send.save()
-    except:
+    except Exception as e:            
+        new_error = SystemError(error_message = e)
+        new_error.save()
         new_error = SystemError(error_message=NURSERY_TEMP_ERROR_MESSAGE)
         new_error.save()
 #function for handling all automatic mode logic
@@ -257,13 +256,19 @@ def manual_mode():
  
  #main
 while True:
-    NOW_TIME = datetime.now()
-    read_temp()
-    read_humidity()
-    if(SystemStatus.objects.order_by('id').last().automatic == True):
-        automatic_mode()
-    else:
-        manual_mode()
-        
-    
-    time.sleep(5)
+    MAIN_LOOP_ERROR_MESSAGE = 'There was a problem while executing the main hardware program'
+    try:
+        NOW_TIME = datetime.now()
+        read_temp()
+        read_humidity()
+        if(SystemStatus.objects.order_by('id').last().automatic == True):
+            automatic_mode()
+        else:
+            manual_mode()
+                    
+        time.sleep(5)
+    except Exception as e:
+        new_error = SystemError(error_message = e)
+        new_error.save()
+        new_error = SystemError(error_message=MAIN_LOOP_ERROR_MESSAGE)
+        new_error.save()
