@@ -3,7 +3,6 @@ from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHe
 from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 import random
 from datetime import datetime, timezone, timedelta
-import pytz
 from time import sleep
 from automated_greenhouse.util import *
 
