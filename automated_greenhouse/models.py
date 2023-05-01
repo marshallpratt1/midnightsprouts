@@ -86,52 +86,52 @@ class FanStatus(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        previous = FanStatus.objects.filter(id=self.id-1)[0]
-        if previous.fan_on and not self.fan_on:
-            return f"Fan turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        elif not previous.fan_on and self.fan_on:
-            return f"Fan turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        else:
-            return f"Fan status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if FanStatus.objects.filter(id=self.id-1).exists():
+            previous = FanStatus.objects.filter(id=self.id-1)[0]
+            if previous.fan_on and not self.fan_on:
+                return f"Fan turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            elif not previous.fan_on and self.fan_on:
+                return f"Fan turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        return f"Fan status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
         
 class VentStatus(models.Model):
     vent_on = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        if VentStatus.objects.filter(id=self.id-1).exists():
             previous = VentStatus.objects.filter(id=self.id-1)[0]
             if previous.vent_on and not self.vent_on:
                 return f"Vent turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
             elif not previous.vent_on and self.vent_on:
                 return f"Vent turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-            else:
-                return f"Vent status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        return f"Vent status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
 
 class AirHeaterStatus(models.Model):
     air_heater_on = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        previous = AirHeaterStatus.objects.filter(id=self.id-1)[0]
-        if previous.air_heater_on and not self.air_heater_on:
-            return f"Heater turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        elif not previous.air_heater_on and self.air_heater_on:
-            return f"Heater turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        else:
-            return f"Heater status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if AirHeaterStatus.objects.filter(id=self.id-1).exists():
+            previous = AirHeaterStatus.objects.filter(id=self.id-1)[0]
+            if previous.air_heater_on and not self.air_heater_on:
+                return f"Heater turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            elif not previous.air_heater_on and self.air_heater_on:
+                return f"Heater turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        return f"Heater status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
 
 class WaterHeaterStatus(models.Model):
     water_heater_on = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        previous = WaterHeaterStatus.objects.filter(id=self.id-1)[0]
-        if previous.water_heater_on and not self.water_heater_on:
-            return f"Heater turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        elif not previous.water_heater_on and self.water_heater_on:
-            return f"Heater turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        else:
-            return f"Heater status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if WaterHeaterStatus.objects.filter(id=self.id-1).exists():
+            previous = WaterHeaterStatus.objects.filter(id=self.id-1)[0]
+            if previous.water_heater_on and not self.water_heater_on:
+                return f"Heater turned off: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            elif not previous.water_heater_on and self.water_heater_on:
+                return f"Heater turned on: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        return f"Heater status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
 
 
 class PumpStatus(models.Model):
@@ -165,13 +165,14 @@ class GardenValveStatus(models.Model):
     next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
-        previous = GardenValveStatus.objects.filter(id=self.id-1)[0]
-        if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
-            return f"New garden valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if not previous.garden_valve_open and self.garden_valve_open:
-            return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if previous.garden_valve_open and not self.garden_valve_open:
-            return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if GardenValveStatus.objects.filter(id=self.id-1).exists():
+            previous = GardenValveStatus.objects.filter(id=self.id-1)[0]
+            if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
+                return f"New garden valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if not previous.garden_valve_open and self.garden_valve_open:
+                return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if previous.garden_valve_open and not self.garden_valve_open:
+                return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
         return f"Garden valve status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
 
 class GreenhousePlanterValveStatus(models.Model):
@@ -184,13 +185,14 @@ class GreenhousePlanterValveStatus(models.Model):
     next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
-        previous = GreenhousePlanterValveStatus.objects.filter(id=self.id-1)[0]
-        if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
-            return f"New Greenhouse Planter valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if not previous.greenhouse_planter_valve_open and self.greenhouse_planter_valve_open:
-            return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if previous.greenhouse_planter_valve_open and not self.greenhouse_planter_valve_open:
-            return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if GreenhousePlanterValveStatus.objects.filter(id=self.id-1).exists():
+            previous = GreenhousePlanterValveStatus.objects.filter(id=self.id-1)[0]
+            if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
+                return f"New Greenhouse Planter valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if not previous.greenhouse_planter_valve_open and self.greenhouse_planter_valve_open:
+                return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if previous.greenhouse_planter_valve_open and not self.greenhouse_planter_valve_open:
+                return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
         return f"Greenhouse Planter valve status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
 
 class GreenhouseTreeValveStatus(models.Model):
@@ -203,11 +205,12 @@ class GreenhouseTreeValveStatus(models.Model):
     next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
-        previous = GreenhouseTreeValveStatus.objects.filter(id=self.id-1)[0]
-        if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
-            return f"New Greenhouse Tree valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if not previous.greenhouse_tree_valve_open and self.greenhouse_tree_valve_open:
-            return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
-        if previous.greenhouse_tree_valve_open and not self.greenhouse_tree_valve_open:
-            return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+        if GreenhouseTreeValveStatus.objects.filter(id=self.id-1).exists():
+            previous = GreenhouseTreeValveStatus.objects.filter(id=self.id-1)[0]
+            if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
+                return f"New Greenhouse Tree valve times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if not previous.greenhouse_tree_valve_open and self.greenhouse_tree_valve_open:
+                return f"Opened: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+            if previous.greenhouse_tree_valve_open and not self.greenhouse_tree_valve_open:
+                return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
         return f"Greenhouse Tree valve status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
