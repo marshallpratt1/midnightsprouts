@@ -2,7 +2,9 @@ from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp,
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, SystemError
 from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 import random
+from datetime import datetime, timezone, timedelta
 from time import sleep
+from automated_greenhouse.util import *
 
 def run():
     greenhouse_temps = [34,34,35,36,35,35,34,34,34,33,33,32]
@@ -21,23 +23,50 @@ def run():
         new_object.save()
         new_object = WaterTemp(water_temp = random.randint(50,55))
         new_object.save()
-        new_object = AirHeaterStatus(air_heater_on = random.randint(0,1))
-        new_object.save()
-        new_object = PumpStatus(pump_on = random.randint(0,1))
-        new_object.save()
-        new_object = FanStatus(fan_on = random.randint(0,1))
-        new_object.save()
-        new_object = VentStatus(vent_on = random.randint(0,1))
-        new_object.save()
-        new_object = WaterHeaterStatus(water_heater_on = random.randint(0,1))
-        new_object.save()
-        new_object = GardenValveStatus(garden_valve_open = random.randint(0,1))
-        new_object.save()
-        new_object = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = random.randint(0,1))
-        new_object.save()
-        new_object = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = random.randint(0,1))
-        new_object.save()
-        #new_object = SystemStatus(automatic = random.randint(0,1))
-        #new_object.save()
+
+        pump = PumpStatus.objects.last()
+        now_time = datetime.now(timezone.utc)
+        if ((pump.next_start_time <= now_time) and (pump.next_start_time + timedelta(minutes=pump.duration) > now_time)):
+            if(pump.pump_on == False):
+                print("turning on pump")
+                toggle_pump()
+        else:
+            if(pump.pump_on == True):
+                print("turning off pump")
+                toggle_pump()
+
+        valve = GardenValveStatus.objects.last()
+        now_time = datetime.now(timezone.utc)
+        if ((valve.next_start_time <= now_time) and (valve.next_start_time + timedelta(minutes=valve.duration) > now_time)):
+            if(valve.garden_valve_open == False):
+                print("Opening garden valve")
+                toggle_garden_valve()
+        else:
+            if(valve.garden_valve_open == True):
+                print("Closing garden valve")
+                toggle_garden_valve()
+        
+        valve = GreenhousePlanterValveStatus.objects.last()
+        now_time = datetime.now(timezone.utc)
+        if ((valve.next_start_time <= now_time) and (valve.next_start_time + timedelta(minutes=valve.duration) > now_time)):
+            if(valve.greenhouse_planter_valve_open == False):
+                print("Opening greenhouse planter valve")
+                toggle_greenhouse_planter_valve()
+        else:
+            if(valve.greenhouse_planter_valve_open == True):
+                print("Closing greenhouse planter valve")
+                toggle_greenhouse_planter_valve()
+
+        valve = GreenhouseTreeValveStatus.objects.last()
+        now_time = datetime.now(timezone.utc)
+        if ((valve.next_start_time <= now_time) and (valve.next_start_time + timedelta(minutes=valve.duration) > now_time)):
+            if(valve.greenhouse_tree_valve_open == False):
+                print("Opening greenhouse tree valve")
+                toggle_greenhouse_tree_valve()
+        else:
+            if(valve.greenhouse_tree_valve_open == True):
+                print("Closing greenhouse tree valve")
+                toggle_greenhouse_tree_valve()
+
         count += 1
         sleep(2)
