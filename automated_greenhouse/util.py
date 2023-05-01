@@ -37,7 +37,12 @@ def toggle_pump():
     new_pump_status.start_hour = old_pump_status.start_hour
     new_pump_status.start_minute = old_pump_status.start_minute
     new_pump_status.duration = old_pump_status.duration
-    new_pump_status.save()
+    new_pump_status.frequency = old_pump_status.frequency
+    if new_pump_status.pump_on:
+        new_pump_status.next_start_time = old_pump_status.next_start_time
+    else:
+        new_pump_status.next_start_time = old_pump_status.next_start_time + timedelta(days=new_pump_status.frequency)
+    new_pump_status.save()    
 
 def toggle_garden_valve():
     old_valve_status = GardenValveStatus.objects.order_by('-id')[0]
@@ -45,6 +50,11 @@ def toggle_garden_valve():
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
     new_valve_status.duration = old_valve_status.duration
+    new_valve_status.frequency = old_valve_status.frequency
+    if new_valve_status.garden_valve_open:
+        new_valve_status.next_start_time = old_valve_status.next_start_time
+    else:
+        new_valve_status.next_start_time = old_valve_status.next_start_time + timedelta(days=new_valve_status.frequency)
     new_valve_status.save()
 
 def toggle_greenhouse_planter_valve():
@@ -53,6 +63,11 @@ def toggle_greenhouse_planter_valve():
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
     new_valve_status.duration = old_valve_status.duration
+    new_valve_status.frequency = old_valve_status.frequency
+    if new_valve_status.greenhouse_planter_valve_open:
+        new_valve_status.next_start_time = old_valve_status.next_start_time
+    else:
+        new_valve_status.next_start_time = old_valve_status.next_start_time + timedelta(days=new_valve_status.frequency)
     new_valve_status.save()
 
 def toggle_greenhouse_tree_valve():
@@ -61,6 +76,11 @@ def toggle_greenhouse_tree_valve():
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
     new_valve_status.duration = old_valve_status.duration
+    new_valve_status.frequency = old_valve_status.frequency
+    if new_valve_status.greenhouse_tree_valve_open:
+        new_valve_status.next_start_time = old_valve_status.next_start_time
+    else:
+        new_valve_status.next_start_time = old_valve_status.next_start_time + timedelta(days=new_valve_status.frequency)
     new_valve_status.save()
 
 def toggle_fan():
@@ -73,36 +93,64 @@ def toggle_vent():
     new_status = VentStatus(vent_on = False) if old_status.vent_on else VentStatus(vent_on = True)
     new_status.save()
 
-def set_garden_valve_times(hour, minute, duration):
+def set_garden_valve_times(hour, minute, duration, frequency):
     old_valve_status = GardenValveStatus.objects.order_by('-id')[0]
     new_valve_status = GardenValveStatus(garden_valve_open = True) if old_valve_status.garden_valve_open else GardenValveStatus(garden_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
+    new_valve_status.frequency = frequency
+    now = datetime.now()
+    if now.hour > hour or (now.hour == hour and now.minute > minute):
+        new_day = now + timedelta(days=1)
+        new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
+    else:
+        new_valve_status.next_start_time = now.replace(hour=hour, minute=minute, second=0) 
     new_valve_status.save()
 
-def set_greenhouse_tree_valve_times(hour, minute, duration):
+def set_greenhouse_tree_valve_times(hour, minute, duration, frequency):
     old_valve_status = GreenhouseTreeValveStatus.objects.order_by('-id')[0]
     new_valve_status = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = True) if old_valve_status.greenhouse_tree_valve_open else GreenhouseTreeValveStatus(greenhouse_tree_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
+    new_valve_status.frequency = frequency
+    now = datetime.now()
+    if now.hour > hour or (now.hour == hour and now.minute > minute):
+        new_day = now + timedelta(days=1)
+        new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
+    else:
+        new_valve_status.next_start_time = now.replace(hour=hour, minute=minute, second=0) 
     new_valve_status.save()
 
-def set_greenhouse_planter_valve_times(hour, minute, duration):
+def set_greenhouse_planter_valve_times(hour, minute, duration, frequency):
     old_valve_status = GreenhousePlanterValveStatus.objects.order_by('-id')[0]
     new_valve_status = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = True) if old_valve_status.greenhouse_planter_valve_open else GreenhousePlanterValveStatus(greenhouse_planter_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
+    new_valve_status.frequency = frequency
+    now = datetime.now()
+    if now.hour > hour or (now.hour == hour and now.minute > minute):
+        new_day = now + timedelta(days=1)
+        new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
+    else:
+        new_valve_status.next_start_time = now.replace(hour=hour, minute=minute, second=0) 
     new_valve_status.save()
 
-def set_pump_times(hour, minute, duration):
-    old_pump_status = PumpStatus.objects.order_by('-id')[0]
+def set_pump_times(hour, minute, duration, frequency):
+    old_pump_status = PumpStatus.objects.last()
     new_pump_status = PumpStatus(pump_on = True) if old_pump_status.pump_on else PumpStatus(pump_on = False)
     new_pump_status.start_hour = hour
     new_pump_status.start_minute = minute
     new_pump_status.duration = duration
+    new_pump_status.frequency = frequency
+    now = datetime.now()
+    if now.hour > hour or (now.hour == hour and now.minute > minute):
+        new_day = now + timedelta(days=1)
+        new_pump_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
+    else:
+        new_pump_status.next_start_time = now.replace(hour=hour, minute=minute, second=0) 
     new_pump_status.save()
 
 

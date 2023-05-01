@@ -101,15 +101,15 @@ def automatic_mode():
     air_heater_status = AirHeaterStatus.objects.last().air_heater_on
     water_temp_setpoint = WaterTempSetpoint.objects.last().water_temp_setpoint
     water_temp = WaterTemp.objects.last().water_temp
-    water_heater_status = WaterHeaterStatus.objects.order_by('id').last().water_heater_on
-    fan_status = FanStatus.objects.order_by('id').last().fan_on
-    humidity_setpoint = HumiditySetpoint.objects.order_by('id').last().humidity_setpoint
-    humidity = Humidity.objects.order_by('id').last().humidity
-    vent_status = VentStatus.objects.order_by('id').last().vent_on
-    pump = PumpStatus.objects.order_by('id').last()
-    garden_valve = GardenValveStatus.objects.order_by('id').last()
-    greenhouse_planter_valve = GreenhousePlanterValveStatus.objects.order_by('id').last()
-    greenhouse_tree_valve = GreenhouseTreeValveStatus.objects.order_by('id').last()
+    water_heater_status = WaterHeaterStatus.objects.last().water_heater_on
+    fan_status = FanStatus.objects.last().fan_on
+    humidity_setpoint = HumiditySetpoint.objects.last().humidity_setpoint
+    humidity = Humidity.objects.last().humidity
+    vent_status = VentStatus.objects.last().vent_on
+    pump = PumpStatus.objects.last()
+    garden_valve = GardenValveStatus.objects.last()
+    greenhouse_planter_valve = GreenhousePlanterValveStatus.objects.last()
+    greenhouse_tree_valve = GreenhouseTreeValveStatus.objects.last()
 
     #THESE RUN OFF SETPOINTS
     #automatic air heater toggle

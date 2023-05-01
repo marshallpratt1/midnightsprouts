@@ -266,7 +266,7 @@
                         <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Change Water Temp Setpoint</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Toggle Water Heater?</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -274,8 +274,8 @@
                                     {% csrf_token %}                
                                     {{ water_heater_form }}
                                     <hr>
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>                                    </form>
+                                    <button class="btn btn-primary" type="submit">Yes</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
                                 </form>
                             </div>                                
                         </div>

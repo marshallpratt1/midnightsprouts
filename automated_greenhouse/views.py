@@ -28,28 +28,28 @@ def index(request):
         if SystemStatus.objects.last().automatic:
             try:
                 if 'air_temp_setpoint' in request.POST:
-                    util.update_air_temp_setpoint(request.POST['air_temp_setpoint'])
+                    util.update_air_temp_setpoint(int(request.POST['air_temp_setpoint']))
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'humidity_setpoint' in request.POST:
-                    util.update_humidity_setpoint(request.POST['humidity_setpoint'])
+                    util.update_humidity_setpoint(int(request.POST['humidity_setpoint']))
                     messages.add_message(request, messages.SUCCESS,success_message)
                 if 'water_setpoint' in request.POST:
-                    util.update_water_temp_setpoint(request.POST['water_setpoint'])
+                    util.update_water_temp_setpoint(int(request.POST['water_setpoint']))
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'water_setpoint' in request.POST:
-                    util.update_water_temp_setpoint(request.POST['water_setpoint'])
+                    util.update_water_temp_setpoint(int(request.POST['water_setpoint']))
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'garden_start_hour' in request.POST:
-                    util.set_garden_valve_times(request.POST['garden_start_hour'],request.POST['start_minute'], request.POST['duration'])
+                    util.set_garden_valve_times(int(request.POST['garden_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'tree_start_hour' in request.POST:
-                    util.set_greenhouse_tree_valve_times(request.POST['tree_start_hour'],request.POST['start_minute'], request.POST['duration'])       
+                    util.set_greenhouse_tree_valve_times(int(request.POST['tree_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))       
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'pump_start_hour' in request.POST:
-                    util.set_pump_times(request.POST['pump_start_hour'],request.POST['start_minute'], request.POST['duration'])
+                    util.set_pump_times(int(request.POST['pump_start_hour']),int(request.POST['start_minute']), int(request.POST['duration']), int(request.POST['frequency']))
                     messages.add_message(request, messages.SUCCESS, success_message)
                 if 'planter_start_hour' in request.POST:
-                    util.set_greenhouse_planter_valve_times(request.POST['planter_start_hour'],request.POST['start_minute'], request.POST['duration'])               
+                    util.set_greenhouse_planter_valve_times(int(request.POST['planter_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))               
                     messages.add_message(request, messages.SUCCESS, success_message)
             except:
                 messages.add_message(request, messages.ERROR, failure_message)
