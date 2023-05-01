@@ -144,7 +144,7 @@ class PumpStatus(models.Model):
     next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
-        if self.id > 0:
+        if PumpStatus.objects.filter(id=self.id-1)[0]:
             previous = PumpStatus.objects.filter(id=self.id-1)[0]
             if previous.start_hour != self.start_hour or previous.start_minute != self.start_minute or previous.duration != self.duration or previous.frequency != self.frequency:
                 return f"New pump times created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
