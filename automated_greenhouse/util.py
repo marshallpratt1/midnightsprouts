@@ -1,7 +1,7 @@
 from .models import User, SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel
 from .models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus
 from .models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
-from datetime import timedelta, datetime 
+from datetime import timedelta, datetime, timezone
 import json
 
 def update_air_temp_setpoint(setpoint):
@@ -17,22 +17,22 @@ def update_water_temp_setpoint(setpoint):
     new_setpoint.save()
 
 def toggle_system_status():
-    old_status = SystemStatus.objects.order_by('-id')[0]
+    old_status = SystemStatus.objects.last()
     new_status = SystemStatus(automatic = False) if old_status.automatic else SystemStatus(automatic = True)
     new_status.save()
 
 def toggle_nursery_heater():
-    old_heater_status = AirHeaterStatus.objects.order_by('-id')[0]
+    old_heater_status = AirHeaterStatus.objects.last()
     new_heater_status = AirHeaterStatus(air_heater_on = False) if old_heater_status.air_heater_on else AirHeaterStatus(air_heater_on = True)
     new_heater_status.save()
 
 def toggle_water_heater():
-    old_heater_status = WaterHeaterStatus.objects.order_by('-id')[0]
+    old_heater_status = WaterHeaterStatus.objects.last()
     new_heater_status = WaterHeaterStatus(water_heater_on = False) if old_heater_status.water_heater_on else WaterHeaterStatus(water_heater_on = True)
     new_heater_status.save()
 
 def toggle_pump():
-    old_pump_status = PumpStatus.objects.order_by('-id')[0]
+    old_pump_status = PumpStatus.objects.last()
     new_pump_status = PumpStatus(pump_on = False) if old_pump_status.pump_on else PumpStatus(pump_on = True)
     new_pump_status.start_hour = old_pump_status.start_hour
     new_pump_status.start_minute = old_pump_status.start_minute
@@ -45,7 +45,7 @@ def toggle_pump():
     new_pump_status.save()    
 
 def toggle_garden_valve():
-    old_valve_status = GardenValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GardenValveStatus.objects.last()
     new_valve_status = GardenValveStatus(garden_valve_open = False) if old_valve_status.garden_valve_open else GardenValveStatus(garden_valve_open = True)
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
@@ -58,7 +58,7 @@ def toggle_garden_valve():
     new_valve_status.save()
 
 def toggle_greenhouse_planter_valve():
-    old_valve_status = GreenhousePlanterValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GreenhousePlanterValveStatus.objects.last()
     new_valve_status = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = False) if old_valve_status.greenhouse_planter_valve_open else GreenhousePlanterValveStatus(greenhouse_planter_valve_open = True)
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
@@ -71,7 +71,7 @@ def toggle_greenhouse_planter_valve():
     new_valve_status.save()
 
 def toggle_greenhouse_tree_valve():
-    old_valve_status = GreenhouseTreeValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GreenhouseTreeValveStatus.objects.last()
     new_valve_status = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = False) if old_valve_status.greenhouse_tree_valve_open else GreenhouseTreeValveStatus(greenhouse_tree_valve_open = True)
     new_valve_status.start_hour = old_valve_status.start_hour
     new_valve_status.start_minute = old_valve_status.start_minute
@@ -84,23 +84,23 @@ def toggle_greenhouse_tree_valve():
     new_valve_status.save()
 
 def toggle_fan():
-    old_status = FanStatus.objects.order_by('-id')[0]
+    old_status = FanStatus.objects.last()
     new_status = FanStatus(fan_on = False) if old_status.fan_on else FanStatus(fan_on = True)
     new_status.save()
 
 def toggle_vent():
-    old_status = VentStatus.objects.order_by('-id')[0]
+    old_status = VentStatus.objects.last()
     new_status = VentStatus(vent_on = False) if old_status.vent_on else VentStatus(vent_on = True)
     new_status.save()
 
 def set_garden_valve_times(hour, minute, duration, frequency):
-    old_valve_status = GardenValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GardenValveStatus.objects.last()
     new_valve_status = GardenValveStatus(garden_valve_open = True) if old_valve_status.garden_valve_open else GardenValveStatus(garden_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
     new_valve_status.frequency = frequency
-    now = datetime.now()
+    now = datetime.now(timezone(offset=timedelta(hours=AKDT_OFFSET)))
     if now.hour > hour or (now.hour == hour and now.minute > minute):
         new_day = now + timedelta(days=1)
         new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
@@ -109,13 +109,13 @@ def set_garden_valve_times(hour, minute, duration, frequency):
     new_valve_status.save()
 
 def set_greenhouse_tree_valve_times(hour, minute, duration, frequency):
-    old_valve_status = GreenhouseTreeValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GreenhouseTreeValveStatus.objects.last()
     new_valve_status = GreenhouseTreeValveStatus(greenhouse_tree_valve_open = True) if old_valve_status.greenhouse_tree_valve_open else GreenhouseTreeValveStatus(greenhouse_tree_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
     new_valve_status.frequency = frequency
-    now = datetime.now()
+    now = datetime.now(timezone(offset=timedelta(hours=AKDT_OFFSET)))
     if now.hour > hour or (now.hour == hour and now.minute > minute):
         new_day = now + timedelta(days=1)
         new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
@@ -124,13 +124,13 @@ def set_greenhouse_tree_valve_times(hour, minute, duration, frequency):
     new_valve_status.save()
 
 def set_greenhouse_planter_valve_times(hour, minute, duration, frequency):
-    old_valve_status = GreenhousePlanterValveStatus.objects.order_by('-id')[0]
+    old_valve_status = GreenhousePlanterValveStatus.objects.last()
     new_valve_status = GreenhousePlanterValveStatus(greenhouse_planter_valve_open = True) if old_valve_status.greenhouse_planter_valve_open else GreenhousePlanterValveStatus(greenhouse_planter_valve_open = False)
     new_valve_status.start_hour = hour
     new_valve_status.start_minute = minute
     new_valve_status.duration = duration
     new_valve_status.frequency = frequency
-    now = datetime.now()
+    now = datetime.now(timezone(offset=timedelta(hours=AKDT_OFFSET)))
     if now.hour > hour or (now.hour == hour and now.minute > minute):
         new_day = now + timedelta(days=1)
         new_valve_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       
@@ -145,7 +145,7 @@ def set_pump_times(hour, minute, duration, frequency):
     new_pump_status.start_minute = minute
     new_pump_status.duration = duration
     new_pump_status.frequency = frequency
-    now = datetime.now()
+    now = datetime.now(timezone(offset=timedelta(hours=AKDT_OFFSET)))
     if now.hour > hour or (now.hour == hour and now.minute > minute):
         new_day = now + timedelta(days=1)
         new_pump_status.next_start_time = new_day.replace(hour=hour, minute=minute, second=0)       

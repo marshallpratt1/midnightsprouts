@@ -204,14 +204,14 @@ def automatic_mode():
 #function for allowing user to toggle all output on or off manually
 def manual_mode():
     #initilize objects status by checking last database entry
-    air_heater_status = AirHeaterStatus.objects.order_by('id').last().air_heater_on
-    water_heater_status = WaterHeaterStatus.objects.order_by('id').last().water_heater_on
-    fan_status = FanStatus.objects.order_by('id').last().fan_on
-    vent_status = VentStatus.objects.order_by('id').last().vent_on
-    pump_status = PumpStatus.objects.order_by('id').last().pump_on
-    garden_valve_status = GardenValveStatus.objects.order_by('id').last().garden_valve_open
-    greenhouse_planter_valve_status = GreenhousePlanterValveStatus.objects.order_by('id').last().greenhouse_planter_valve_open
-    greenhouse_tree_valve_status = GreenhouseTreeValveStatus.objects.order_by('id').last().greenhouse_tree_valve_open
+    air_heater_status = AirHeaterStatus.objects.last().air_heater_on
+    water_heater_status = WaterHeaterStatus.objects.last().water_heater_on
+    fan_status = FanStatus.objects.last().fan_on
+    vent_status = VentStatus.objects.last().vent_on
+    pump_status = PumpStatus.objects.last().pump_on
+    garden_valve_status = GardenValveStatus.objects.last().garden_valve_open
+    greenhouse_planter_valve_status = GreenhousePlanterValveStatus.objects.last().greenhouse_planter_valve_open
+    greenhouse_tree_valve_status = GreenhouseTreeValveStatus.objects.last().greenhouse_tree_valve_open
     
     #Air temp Status   
     if(air_heater_status == True):
@@ -261,7 +261,7 @@ while True:
         NOW_TIME = datetime.now()
         read_temp()
         read_humidity()
-        if(SystemStatus.objects.order_by('id').last().automatic == True):
+        if(SystemStatus.objects.last().automatic == True):
             automatic_mode()
         else:
             manual_mode()
