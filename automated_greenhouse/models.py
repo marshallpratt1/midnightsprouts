@@ -141,7 +141,7 @@ class PumpStatus(models.Model):
     start_minute = models.IntegerField(default=0)
     duration = models.IntegerField(default=0)
     frequency = models.IntegerField(default=0)
-    next_start_time = models.DateTimeField() #this gets stored in local alaska time
+    next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
         previous = PumpStatus.objects.filter(id=self.id-1)[0]
@@ -161,7 +161,7 @@ class GardenValveStatus(models.Model):
     start_minute = models.IntegerField(default=0)
     duration = models.IntegerField(default=0)
     frequency = models.IntegerField(default=0)
-    next_start_time = models.DateTimeField() #this gets stored in local alaska time
+    next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
         previous = GardenValveStatus.objects.filter(id=self.id-1)[0]
@@ -180,7 +180,7 @@ class GreenhousePlanterValveStatus(models.Model):
     start_minute = models.IntegerField(default=0)
     duration = models.IntegerField(default=0)
     frequency = models.IntegerField(default=0)
-    next_start_time = models.DateTimeField() #this gets stored in local alaska time
+    next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
         previous = GreenhousePlanterValveStatus.objects.filter(id=self.id-1)[0]
@@ -199,7 +199,7 @@ class GreenhouseTreeValveStatus(models.Model):
     start_minute = models.IntegerField(default=0)
     duration = models.IntegerField(default=0)
     frequency = models.IntegerField(default=0)
-    next_start_time = models.DateTimeField() #this gets stored in local alaska time
+    next_start_time = models.DateTimeField(default=timezone.now) #this gets stored in local alaska time
 
     def __str__(self):
         previous = GreenhouseTreeValveStatus.objects.filter(id=self.id-1)[0]
