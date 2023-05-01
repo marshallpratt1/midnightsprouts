@@ -1,10 +1,9 @@
 import os
 import glob
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 import Adafruit_DHT
 import RPi.GPIO as GPIO
-from django.utils import timezone
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, SystemError
 from automated_greenhouse.models import PumpStatus, FanStatus, VentStatus, AirHeaterStatus, WaterHeaterStatus, GardenValveStatus, GreenhousePlanterValveStatus, GreenhouseTreeValveStatus
 from automated_greenhouse.models import AirTempSetpoint, WaterTempSetpoint, HumiditySetpoint, LastFrostGreenhouse
@@ -59,14 +58,14 @@ def read_temp():
             temp_f = temp * 1.8 + 32
             current_temp = "%.1f" % temp_f            
             if sensor_id == 0:
-                data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=timezone.now())
+                data_to_send = OutsideAirTemp(outside_air_temp = current_temp, created_at=datetime.now(timezone.utc))
                 data_to_send.save()
                 if (float(data_to_send.outside_air_temp) <= 32):                         
                     new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(id = 0)
                     new_frost_time.created_at = timezone.now()
                     new_frost_time.save()
             elif sensor_id == 1:
-                data_to_send = WaterTemp(water_temp = current_temp, created_at=timezone.now())
+                data_to_send = WaterTemp(water_temp = current_temp, created_at=datetime.now(timezone.utc))
                 data_to_send.save()
         except Exception as e:            
             new_error = SystemError(error_message = e)
@@ -84,8 +83,8 @@ def read_humidity():
         current_temp_f = "%.1f" % current_temp_f
         # dscard bad sensor data
         if(current_humidity < 100):
-            temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=timezone.now())
-            humidity_data_to_send = Humidity(humidity = current_humidity, created_at=timezone.now())
+            temp_data_to_send = NurseryAirTemp(nursery_air_temp = current_temp_f, created_at=datetime.now(timezone.utc))
+            humidity_data_to_send = Humidity(humidity = current_humidity, created_at=datetime.now(timezone.utc))
             temp_data_to_send.save()
             humidity_data_to_send.save()
     except Exception as e:            
