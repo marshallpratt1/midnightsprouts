@@ -1,7 +1,7 @@
 import os
 import glob
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, SystemError
@@ -169,7 +169,8 @@ def automatic_mode():
 
     # THESE RUN OFF TIMERS
     # automatic pump toggle
-    if ((pump.next_start_time <= NOW_TIME) and (pump.next_start_time + timedelta(minutes=pump.duration) > NOW_TIME)):
+    now_time_utc = datetime.now(timezone.utc)
+    if ((pump.next_start_time <= now_time_utc) and (pump.next_start_time + timedelta(minutes=pump.duration) > now_time_utc)):
         # safety check, don't turn on pump if water is freezing
         if (water_temp > 32):
             GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
@@ -181,7 +182,7 @@ def automatic_mode():
             toggle_pump()
 
     # automatic valve1
-    if (NOW_TIME.hour == garden_valve.start_hour and NOW_TIME.minute >= garden_valve.start_minute and NOW_TIME.minute < garden_valve.start_minute + garden_valve.duration):
+    if ((garden_valve.next_start_time <= now_time_utc) and (garden_valve.next_start_time + timedelta(minutes=garden_valve.duration) > now_time_utc)):
         GPIO.output(VALVE_TOGGLE_1, GPIO.HIGH)
         if (garden_valve.garden_valve_open == False):
             toggle_garden_valve()
@@ -191,7 +192,7 @@ def automatic_mode():
             toggle_garden_valve()
 
     # automatic valve2
-    if (NOW_TIME.hour == greenhouse_planter_valve.start_hour and NOW_TIME.minute >= greenhouse_planter_valve.start_minute and NOW_TIME.minute < greenhouse_planter_valve.start_minute + garden_valve.duration):
+    if ((greenhouse_planter_valve.next_start_time <= now_time_utc) and (greenhouse_planter_valve.next_start_time + timedelta(minutes=greenhouse_planter_valve.duration) > now_time_utc)):
         GPIO.output(VALVE_TOGGLE_2, GPIO.HIGH)
         if (greenhouse_planter_valve.greenhouse_planter_valve_open == False):
             toggle_greenhouse_planter_valve()
@@ -201,7 +202,7 @@ def automatic_mode():
             toggle_greenhouse_planter_valve()
 
     # automatic valve3
-    if (NOW_TIME.hour == greenhouse_tree_valve.start_hour and NOW_TIME.minute >= greenhouse_tree_valve.start_minute and NOW_TIME.minute < greenhouse_tree_valve.start_minute + garden_valve.duration):
+    if ((greenhouse_tree_valve.next_start_time <= now_time_utc) and (greenhouse_tree_valve.next_start_time + timedelta(minutes=greenhouse_tree_valve.duration) > now_time_utc)):
         GPIO.output(VALVE_TOGGLE_3, GPIO.HIGH)
         if (greenhouse_tree_valve.greenhouse_tree_valve_open == False):
             toggle_greenhouse_tree_valve()
