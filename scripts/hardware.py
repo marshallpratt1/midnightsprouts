@@ -1,7 +1,7 @@
 import os
 import glob
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 from automated_greenhouse.models import SystemStatus, OutsideAirTemp, WaterTemp, NurseryAirTemp, Humidity, WaterLevel, SystemError
@@ -169,7 +169,7 @@ def automatic_mode():
 
     # THESE RUN OFF TIMERS
     # automatic pump toggle
-    if (NOW_TIME.hour == pump.start_hour and NOW_TIME.minute >= pump.start_minute and NOW_TIME.minute < pump.start_minute + pump.duration):
+    if ((pump.next_start_time <= NOW_TIME) and (pump.next_start_time + timedelta(minutes=pump.duration) > NOW_TIME)):
         # safety check, don't turn on pump if water is freezing
         if (water_temp > 32):
             GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
