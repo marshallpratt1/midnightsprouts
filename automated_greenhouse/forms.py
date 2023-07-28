@@ -26,7 +26,7 @@ class AirTempForm(forms.Form):
     air_temp_setpoint = forms.IntegerField(initial=80, min_value=50, max_value=90, label="Air Temp Setpoint")
 
 class HumidityForm(forms.Form):
-    humidity_setpoint = forms.IntegerField(initial=80, min_value=50, max_value=90, label="Humidity Setpoint")
+    humidity_setpoint = forms.IntegerField(initial=80, min_value=50, max_value=100, label="Humidity Setpoint")
 
 class WaterForm(forms.Form):
     water_setpoint = forms.IntegerField(initial=60, min_value=40, max_value=70, label="Water Temp Setpoint")
