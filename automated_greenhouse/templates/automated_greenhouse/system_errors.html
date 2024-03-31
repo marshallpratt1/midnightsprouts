@@ -19,7 +19,7 @@
     </ol>
 
     {% else %}
-    <h3>There are no messages to display</h3>
+    <h3>There are no errors to display</h3>
 
     {% endif %}
 
@@ -35,7 +35,6 @@
                 <form action = "{% url 'errors' %}" method="post" id = "status_form", name="status_form">
                     {% csrf_token %}    
                     {{ system_form }}
-                    <hr>
                     <button class="btn btn-primary" type="submit">Yes</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
                 </form>
