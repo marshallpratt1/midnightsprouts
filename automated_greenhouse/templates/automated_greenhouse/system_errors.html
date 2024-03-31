@@ -1,7 +1,15 @@
 {% extends "automated_greenhouse/layout.html" %}
 {% block main %}
     <h2>Error Message Log</h2>
+    {% if user.is_superuser %}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#clearErrorModal">
+                Clear Error Log
+            </button>
+    {% endif %}
 <hr>
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
     {% if error_messages %}
 
     <ol>
@@ -14,5 +22,27 @@
     <h3>There are no messages to display</h3>
 
     {% endif %}
+
+    <!-- Begin Clear Errors Form-->
+    <div class="modal fade" id="clearErrorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ clear_errors_message }}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action = "{% url 'errors' %}" method="post" id = "status_form", name="status_form">
+                    {% csrf_token %}    
+                    {{ system_form }}
+                    <hr>
+                    <button class="btn btn-primary" type="submit">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
+                </form>
+            </div>                                
+        </div>
+        </div>
+    </div>
+    <!-- End CLear Errors Form -->
 
 {% endblock %}

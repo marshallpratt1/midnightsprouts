@@ -34,6 +34,9 @@ class WaterForm(forms.Form):
 class SystemStatusForm(forms.Form):
     change_status = forms.BooleanField(label='Change System Control:')
 
+class ClearLogsForm(forms.Form):
+    clear_logs = forms.BooleanField(label='Clear Error Logs:')
+
 class NurseryHeaterForm(forms.Form):
     toggle_nursery_heater = forms.BooleanField(label='Toggle Nursery Heater:')
 
