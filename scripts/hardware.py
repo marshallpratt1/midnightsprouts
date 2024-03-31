@@ -67,7 +67,7 @@ def read_temp():
                 if (float(data_to_send.outside_air_temp) <= 32):
                     new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(
                         id=0)
-                    new_frost_time.created_at = timezone.now()
+                    new_frost_time.created_at = datetime.now(timezone.utc)
                     new_frost_time.save()
             elif sensor_id == 1:
                 data_to_send = WaterTemp(
