@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import RegisterForm, AirTempForm, HumidityForm, WaterForm, SystemStatusForm, GreenhouseTreeValveTimeForm
+from .forms import RegisterForm, AirTempForm, HumidityForm, WaterForm, SystemStatusForm, GreenhouseTreeValveTimeForm, ClearLogsForm
 from .forms import NurseryHeaterForm, WaterHeaterForm, GardenValveForm, GreenhousePlanterValveForm, GreenhouseTreeValveForm, FanForm, VentForm, PumpForm
 from .forms import GreenhousePlanterValveTimeForm, GardenValveTimeForm, GreenhouseTreeValveTimeForm, PumpTimeForm
 from . import util
@@ -158,8 +158,22 @@ def index(request):
     })
 
 def system_errors(request):
+    if request.method == "POST":
+        print("THIS WAS A POST!!!")
+        success_message = 'Error log cleared!'
+        failure_message = 'Something went wrong, please try again...'
+        try:
+            print("ATTEMPTING TO DELETE!!!")
+            SystemError.objects.all().delete()
+            messages.add_message(request, messages.SUCCESS, success_message)
+        except:
+            messages.add_message(request, messages.ERROR, failure_message)
+        return HttpResponseRedirect(reverse('errors'))
+
     return render (request, 'automated_greenhouse/system_errors.html' ,{
-        'error_messages' : SystemError.objects.all().order_by('-id')
+        'error_messages' : SystemError.objects.all().order_by('-id'),
+        'form':ClearLogsForm(),
+        'clear_errors_message' : 'Are you sure you want to clear all errors?'
     })
 
 # register new user
