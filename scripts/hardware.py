@@ -62,19 +62,19 @@ def read_temp():
             current_temp = "%.1f" % temp_f
             if sensor_id == 0:
                 data_to_send = OutsideAirTemp(
-                    outside_air_temp=current_temp, created_at=datetime.now(timezone.utc))
+                    outside_air_temp=current_temp, created_at=NOW_TIME)
                 data_to_send.save()
                 if (float(data_to_send.outside_air_temp) <= 32):
                     new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(
                         id=0)
-                    new_frost_time.created_at = datetime.now(timezone.utc)
+                    new_frost_time.created_at = NOW_TIME
                     new_frost_time.save()
             elif sensor_id == 1:
                 data_to_send = WaterTemp(
-                    water_temp=current_temp, created_at=datetime.now(timezone.utc))
+                    water_temp=current_temp, created_at=NOW_TIME)
                 data_to_send.save()
             elif sensor_id == 2:
-                data_to_send = NurseryAirTemp(nursery_air_temp = current_temp, created_at=datetime.now(timezone.utc))
+                data_to_send = NurseryAirTemp(nursery_air_temp = current_temp, created_at=NOW_TIME)
                 data_to_send.save()
         except Exception as e:
             new_error = SystemError(error_message=e)
@@ -93,7 +93,7 @@ def read_humidity():
         # dscard bad sensor data
         if (current_humidity < 100):
             humidity_data_to_send = Humidity(
-                humidity=current_humidity, created_at=datetime.now(timezone.utc))
+                humidity=current_humidity, created_at=NOW_TIME)
             humidity_data_to_send.save()
     except Exception as e:
         new_error = SystemError(error_message=e)
@@ -169,7 +169,7 @@ def automatic_mode():
 
     # THESE RUN OFF TIMERS
     # automatic pump toggle
-    now_time_utc = datetime.now(timezone.utc)
+    now_time_utc = NOW_TIME
     if ((pump.next_start_time <= now_time_utc) and (pump.next_start_time + timedelta(minutes=pump.duration) > now_time_utc)):
         # safety check, don't turn on pump if water is freezing
         if (water_temp > 32):
@@ -273,7 +273,7 @@ def manual_mode():
 while True:
     MAIN_LOOP_ERROR_MESSAGE = 'There was a problem while executing the main hardware program'
     try:
-        NOW_TIME = datetime.now()
+        global NOW_TIME = datetime.now(timezone.utc)
         read_temp()
         read_humidity()
         if (SystemStatus.objects.last().automatic == True):
