@@ -49,7 +49,7 @@ sensor_paths = ['/sys/bus/w1/devices/28-0306979407ca/w1_slave',
 
 # reads temp data from ds18b20 and saves it to database
 # this reads temperatures for water and greenhouse
-def read_temp():
+def read_temp(NOW_TIME):
     for sensor_id, sensor_path in enumerate(sensor_paths):
         try:
             with open(sensor_path, 'r') as file:
@@ -62,19 +62,19 @@ def read_temp():
             current_temp = "%.1f" % temp_f
             if sensor_id == 0:
                 data_to_send = OutsideAirTemp(
-                    outside_air_temp=current_temp, created_at=datetime.now(timezone.utc))
+                    outside_air_temp=current_temp, created_at=NOW_TIME)
                 data_to_send.save()
                 if (float(data_to_send.outside_air_temp) <= 32):
                     new_frost_time, created = LastFrostGreenhouse.objects.get_or_create(
                         id=0)
-                    new_frost_time.created_at = datetime.now(timezone.utc)
+                    new_frost_time.created_at = NOW_TIME
                     new_frost_time.save()
             elif sensor_id == 1:
                 data_to_send = WaterTemp(
-                    water_temp=current_temp, created_at=datetime.now(timezone.utc))
+                    water_temp=current_temp, created_at=NOW_TIME
                 data_to_send.save()
             elif sensor_id == 2:
-                data_to_send = NurseryAirTemp(nursery_air_temp = current_temp, created_at=datetime.now(timezone.utc))
+                data_to_send = NurseryAirTemp(nursery_air_temp = current_temp, created_at=NOW_TIME)
                 data_to_send.save()
         except Exception as e:
             new_error = SystemError(error_message=e)
@@ -86,14 +86,14 @@ def read_temp():
 # this reads temperature and humiditity for inside the nursery
 
 
-def read_humidity():
+def read_humidity(NOW_TIME):
     try:
         current_humidity, current_temp = Adafruit_DHT.read_retry(
             Adafruit_DHT.DHT11, DHT_DATA_PIN)
         # dscard bad sensor data
         if (current_humidity < 100):
             humidity_data_to_send = Humidity(
-                humidity=current_humidity, created_at=datetime.now(timezone.utc))
+                humidity=current_humidity, created_at=NOW_TIME)
             humidity_data_to_send.save()
     except Exception as e:
         new_error = SystemError(error_message=e)
@@ -103,7 +103,7 @@ def read_humidity():
 # function for handling all automatic mode logic
 
 
-def automatic_mode():
+def automatic_mode(NOW_TIME):
     # initilize objects status and setpoints by checking last database entry
     air_temp_setpoint = AirTempSetpoint.objects.last().air_temp_setpoint
     air_temp = NurseryAirTemp.objects.last().nursery_air_temp
@@ -169,8 +169,7 @@ def automatic_mode():
 
     # THESE RUN OFF TIMERS
     # automatic pump toggle
-    now_time_utc = datetime.now(timezone.utc)
-    if ((pump.next_start_time <= now_time_utc) and (pump.next_start_time + timedelta(minutes=pump.duration) > now_time_utc)):
+    if ((pump.next_start_time <= NOW_TIME) and (pump.next_start_time + timedelta(minutes=pump.duration) > NOW_TIME)):
         # safety check, don't turn on pump if water is freezing
         if (water_temp > 32):
             GPIO.output(PUMP_TOGGLE, GPIO.HIGH)
@@ -182,7 +181,7 @@ def automatic_mode():
             toggle_pump()
 
     # automatic valve1
-    if ((garden_valve.next_start_time <= now_time_utc) and (garden_valve.next_start_time + timedelta(minutes=garden_valve.duration) > now_time_utc)):
+    if ((garden_valve.next_start_time <= NOW_TIME) and (garden_valve.next_start_time + timedelta(minutes=garden_valve.duration) > NOW_TIME)):
         GPIO.output(VALVE_TOGGLE_1, GPIO.HIGH)
         if (garden_valve.garden_valve_open == False):
             toggle_garden_valve()
@@ -192,7 +191,7 @@ def automatic_mode():
             toggle_garden_valve()
 
     # automatic valve2
-    if ((greenhouse_planter_valve.next_start_time <= now_time_utc) and (greenhouse_planter_valve.next_start_time + timedelta(minutes=greenhouse_planter_valve.duration) > now_time_utc)):
+    if ((greenhouse_planter_valve.next_start_time <= NOW_TIME) and (greenhouse_planter_valve.next_start_time + timedelta(minutes=greenhouse_planter_valve.duration) > NOW_TIME)):
         GPIO.output(VALVE_TOGGLE_2, GPIO.HIGH)
         if (greenhouse_planter_valve.greenhouse_planter_valve_open == False):
             toggle_greenhouse_planter_valve()
@@ -202,7 +201,7 @@ def automatic_mode():
             toggle_greenhouse_planter_valve()
 
     # automatic valve3
-    if ((greenhouse_tree_valve.next_start_time <= now_time_utc) and (greenhouse_tree_valve.next_start_time + timedelta(minutes=greenhouse_tree_valve.duration) > now_time_utc)):
+    if ((greenhouse_tree_valve.next_start_time <= NOW_TIME) and (greenhouse_tree_valve.next_start_time + timedelta(minutes=greenhouse_tree_valve.duration) > NOW_TIME)):
         GPIO.output(VALVE_TOGGLE_3, GPIO.HIGH)
         if (greenhouse_tree_valve.greenhouse_tree_valve_open == False):
             toggle_greenhouse_tree_valve()
@@ -214,7 +213,7 @@ def automatic_mode():
 # function for allowing user to toggle all output on or off manually
 
 
-def manual_mode():
+def manual_mode(NOW_TIME):
     # initilize objects status by checking last database entry
     air_heater_status = AirHeaterStatus.objects.last().air_heater_on
     water_heater_status = WaterHeaterStatus.objects.last().water_heater_on
@@ -273,13 +272,13 @@ def manual_mode():
 while True:
     MAIN_LOOP_ERROR_MESSAGE = 'There was a problem while executing the main hardware program'
     try:
-        NOW_TIME = datetime.now()
-        read_temp()
-        read_humidity()
+        NOW_TIME = datetime.now(timezone.utc)
+        read_temp(NOW_TIME)
+        read_humidity(NOW_TIME)
         if (SystemStatus.objects.last().automatic == True):
-            automatic_mode()
+            automatic_mode(NOW_TIME)
         else:
-            manual_mode()
+            manual_mode(NOW_TIME)
 
         time.sleep(5)
     except Exception as e:
