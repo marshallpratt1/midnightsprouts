@@ -14,95 +14,61 @@ from django.contrib import messages
 
 
 def index(request):
-    # handle all forms here
-    # each form will call utils.py to handle database updates
+    from .control import OUTPUTS, modes, mode_summary, set_mode, manual_toggle, set_schedule
     if request.method == 'POST':
-        success_message = 'Changes successfully applied!'
-        failure_message = 'Something went wrong, please try again...'
-        if 'change_status' in request.POST:
-            try:
-                util.toggle_system_status()
-                messages.add_message(request, messages.SUCCESS, success_message)
-            except:
-                messages.add_message(request, messages.ERROR, failure_message)
-        if SystemStatus.objects.last().automatic:
-            try:
-                if 'air_temp_setpoint' in request.POST:
-                    util.update_air_temp_setpoint(int(request.POST['air_temp_setpoint']))
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'humidity_setpoint' in request.POST:
-                    util.update_humidity_setpoint(int(request.POST['humidity_setpoint']))
-                    messages.add_message(request, messages.SUCCESS,success_message)
-                if 'water_setpoint' in request.POST:
-                    util.update_water_temp_setpoint(int(request.POST['water_setpoint']))
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'water_setpoint' in request.POST:
-                    util.update_water_temp_setpoint(int(request.POST['water_setpoint']))
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'garden_start_hour' in request.POST:
-                    util.set_garden_valve_times(int(request.POST['garden_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'tree_start_hour' in request.POST:
-                    util.set_greenhouse_tree_valve_times(int(request.POST['tree_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))       
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'pump_start_hour' in request.POST:
-                    util.set_pump_times(int(request.POST['pump_start_hour']),int(request.POST['start_minute']), int(request.POST['duration']), int(request.POST['frequency']))
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'planter_start_hour' in request.POST:
-                    util.set_greenhouse_planter_valve_times(int(request.POST['planter_start_hour']),int(request.POST['start_minute']),int(request.POST['duration']), int(request.POST['frequency']))               
-                    messages.add_message(request, messages.SUCCESS, success_message)
-            except:
-                messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect(reverse('index'))
-        elif not SystemStatus.objects.last().automatic:
-            try:
-                if 'toggle_nursery_heater' in request.POST:
-                    util.toggle_nursery_heater()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_water_heater' in request.POST:
-                    util.toggle_water_heater()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_pump' in request.POST:
-                    util.toggle_pump()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_garden_valve' in request.POST:
-                    util.toggle_garden_valve()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'garden_start_hour' in request.POST:
-                    util.set_garden_valve_times(request.POST['garden_start_hour'],request.POST['start_minute'], request.POST['duration'])
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'tree_start_hour' in request.POST:
-                    util.set_greenhouse_tree_valve_times(request.POST['tree_start_hour'],request.POST['start_minute'], request.POST['duration'])       
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'pump_start_hour' in request.POST:
-                    util.set_pump_times(request.POST['pump_start_hour'],request.POST['start_minute'], request.POST['duration'])
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'planter_start_hour' in request.POST:
-                    util.set_greenhouse_planter_valve_times(request.POST['planter_start_hour'],request.POST['start_minute'], request.POST['duration'])       
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_greenhouse_planter_valve' in request.POST:
-                    util.toggle_greenhouse_planter_valve()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_greenhouse_tree_valve' in request.POST:
-                    util.toggle_greenhouse_tree_valve()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_fan' in request.POST:
-                    util.toggle_fan()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-                if 'toggle_vent' in request.POST:
-                    util.toggle_vent()
-                    messages.add_message(request, messages.SUCCESS, success_message)
-            except:
-                messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect(reverse('index'))
-        #the user submitted a form while after system had switched status
-        else:            
-            messages.add_message(request, messages.ERROR, failure_message)
-            return HttpResponseRedirect(reverse('index'))
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            return HttpResponse('Superuser access required', status=403)
+        try:
+            if 'set_mode' in request.POST:
+                value = request.POST['set_mode']
+                if value not in ('auto', 'manual'):
+                    raise ValueError('Unknown mode')
+                set_mode(request.POST.get('output', ''), value == 'auto')
+            else:
+                handled = False
+                for name in OUTPUTS:
+                    if 'toggle_' + name in request.POST:
+                        manual_toggle(name)
+                        handled = True
+                        break
+                if not handled:
+                    schedule_forms = {
+                        'pump_start_hour': ('pump', PumpTimeForm),
+                        'garden_start_hour': ('garden_valve', GardenValveTimeForm),
+                        'planter_start_hour': ('greenhouse_planter_valve', GreenhousePlanterValveTimeForm),
+                        'tree_start_hour': ('greenhouse_tree_valve', GreenhouseTreeValveTimeForm),
+                    }
+                    for key, (name, form_class) in schedule_forms.items():
+                        if key in request.POST:
+                            form = form_class(request.POST)
+                            if not form.is_valid():
+                                raise ValueError('Invalid schedule')
+                            data = form.cleaned_data
+                            set_schedule(name, data[key], data['start_minute'], data['duration'], data['frequency'])
+                            handled = True
+                            break
+                if not handled:
+                    for key, form_class, update in (
+                        ('air_temp_setpoint', AirTempForm, util.update_air_temp_setpoint),
+                        ('water_setpoint', WaterForm, util.update_water_temp_setpoint),
+                        ('humidity_setpoint', HumidityForm, util.update_humidity_setpoint),
+                    ):
+                        if key in request.POST:
+                            form = form_class(request.POST)
+                            if not form.is_valid():
+                                raise ValueError('Invalid setpoint')
+                            update(form.cleaned_data[key])
+                            handled = True
+                            break
+                if not handled:
+                    raise ValueError('Unknown control request; refresh the dashboard')
+            messages.success(request, 'Changes successfully applied!')
+        except ValueError as error:
+            messages.error(request, str(error))
+        return HttpResponseRedirect(reverse('index'))
 
-    # automatic vs manual controls
-    automatic = SystemStatus.objects.order_by('-id')[0].automatic
-    system_message = 'Are you sure you want to switch the sytem to Manual?' if automatic else 'Are you sure you want to switch the sytem to Automatic?'
+    output_modes = modes()
+    system_status = mode_summary(output_modes)
     last_frost_greenhouse, created = LastFrostGreenhouse.objects.get_or_create(id=0)
     # the context fetches all of the most recent database entries for website render
     return render(request, 'automated_greenhouse/index.html', {
@@ -122,8 +88,9 @@ def index(request):
         'pump_time_form' : PumpTimeForm,
         'fan_form': FanForm,
         'vent_form': VentForm,
-        'automatic': automatic,
-        'system_message': system_message,
+        'output_modes': output_modes,
+        'system_status': system_status,
+        'mode_signature': ''.join('1' if output_modes[name] else '0' for name in OUTPUTS),
         'greenhouse_air_temp_object': OutsideAirTemp.objects.last(),
         'last_frost_greenhouse' : last_frost_greenhouse.created_at.date(),
         'water_temp_object': WaterTemp.objects.last(),
@@ -159,11 +126,11 @@ def index(request):
 
 def system_errors(request):
     if request.method == "POST":
-        print("THIS WAS A POST!!!")
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            return HttpResponse("Superuser access required", status=403)
         success_message = 'Error log cleared!'
         failure_message = 'Something went wrong, please try again...'
         try:
-            print("ATTEMPTING TO DELETE!!!")
             SystemError.objects.all().delete()
             messages.add_message(request, messages.SUCCESS, success_message)
         except:
@@ -272,7 +239,9 @@ def api_get_equipment_status(request):
     })
 
 def api_get_system_status(request):
-    system_status = 'Automatic' if SystemStatus.objects.last().automatic else 'Manual'
+    from .control import OUTPUTS, modes, mode_summary
+    output_modes = modes()
     return JsonResponse({
-        'system_status' : system_status,
-    })   
+        'system_status': mode_summary(output_modes),
+        'mode_signature': ''.join('1' if output_modes[name] else '0' for name in OUTPUTS),
+    })

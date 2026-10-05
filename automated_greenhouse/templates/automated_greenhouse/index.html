@@ -2,36 +2,19 @@
 {% block main %}
     <h2>Greenhouse Monitoring and Controls</h2>
 
-    <!-- Start: System Status -->
     <hr>
-    <h3 id="system_status">System Status: {% if automatic %}Automatic{% else %}Manual{% endif %}</h3><br>
-        {% if user.is_superuser %}
-            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#statusModal">
-                Change Status
-            </button>
-        {% endif %}
-        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ system_message }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action = "{% url 'index' %}" method="post" id = "status_form", name="status_form">
-                        {% csrf_token %}    
-                        {{ system_form }}
-                        <hr>
-                        <button class="btn btn-primary" type="submit">Yes</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>                                    </form>
-                    </form>
-                </div>                                
-            </div>
-            </div>
-        </div>
-    </h3>
+    <h3 id="system_status">System Status: {{ system_status }}</h3>
+    {% if user.is_superuser %}
+    <form method="post" action="{% url 'index' %}" onsubmit="return confirm('Apply this mode to every output?');">
+        {% csrf_token %}
+        <input type="hidden" name="output" value="all">
+        <button class="btn btn-secondary" name="set_mode" value="auto">Set all to AUTO</button>
+        <button class="btn btn-secondary" name="set_mode" value="manual">Set all to MANUAL</button>
+    </form>
+    <p>MANUAL keeps the current output until you change it. AUTO resumes its control logic.</p>
+    {% endif %}
     <hr>
-    <!-- End: System Status -->
+
 
     <!-- Start: Nursery Air Temp -->
     <div class="card" style="padding: 5px;">
@@ -46,7 +29,7 @@
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Nursery Air Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ air_temp_setpoint }}F</strong></p>
-                        {% if user.is_superuser and automatic %}
+                        {% if user.is_superuser %}
                             <button type="button" id="nursery_air_temp_setpoint" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#airTempModal">
                                 Change Setpoint
                             </button>
@@ -122,7 +105,7 @@
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Humidity Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ humidity_setpoint }}%</strong></p>
-                        {% if user.is_superuser and automatic %}
+                        {% if user.is_superuser %}
                             <button type="button" id="nursery_humidity_setpoint_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#humidityModal">
                                 Change Setpoint
                             </button>
@@ -174,7 +157,7 @@
                     <div class="card" style="padding: 2px;">
                         <p class="lead">Water Temp Setpoint: </p>
                         <p class="lead" style="font-size: xx-large;"><strong>{{ water_temp_setpoint }}F</strong></p>
-                        {% if user.is_superuser and automatic %}
+                        {% if user.is_superuser %}
                             <button type="button" id="water_temp_setpoint_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterModal">
                                 Change Setpoint
                             </button>
@@ -220,8 +203,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Nursery Heater: </p>
                     <p class="lead" id="nursery_heater_status" style="font-size: xx-large;"><strong>{% if air_heater_status %}ON{% else %}OFF{% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="nursery_heater" output_auto=output_modes.nursery_heater %}
                     {% if user.is_superuser %}
-                        {% if automatic == False %}    
+                        {% if not output_modes.nursery_heater %}
                             <button type="button" id="nursery_heater_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nurseryHeaterModal">
                                 {% if air_heater_status %}Turn OFF{% else %}Turn ON{% endif %}
                             </button>                       
@@ -255,8 +239,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Water Heater: </p>
                     <p class="lead" id="water_heater_status" style="font-size: xx-large;"><strong>{% if water_heater_status %}ON{% else %}OFF{% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="water_heater" output_auto=output_modes.water_heater %}
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if not output_modes.water_heater %}
                             <button type="button" id="water_heater_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterHeaterModal">
                                 {% if water_heater_status %}Turn OFF{% else %}Turn ON{% endif %}
                             </button>
@@ -291,8 +276,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Fan: </p>
                     <p class="lead" id="fan_status" style="font-size: xx-large;"><strong>{% if fan_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="fan" output_auto=output_modes.fan %}
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if not output_modes.fan %}
                             <button type="button" id="fan_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#fanModal">
                                 {% if fan_status %}Turn Off{% else %}Turn On{% endif %}
                             </button>
@@ -327,8 +313,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Ventilation Fan: </p>
                     <p class="lead" id="vent_status" style="font-size: xx-large;"><strong>{% if vent_status %}ON{% else %}OFF{% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="vent" output_auto=output_modes.vent %}
                     {% if user.is_superuser %}
-                        {% if automatic == False %} 
+                        {% if not output_modes.vent %}
                             <button type="button" id="vent_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ventModal">
                                 {% if vent_status %}Turn Off{% else %}Turn On{% endif %}
                             </button>
@@ -362,8 +349,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Water Pump:</p>
                     <p class="lead" id="water_pump_status" style="font-size: xx-large;"><strong>{% if pump_status %} ON {% else %} OFF {% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="pump" output_auto=output_modes.pump %}
                     {% if user.is_superuser %}
-                        {% if automatic %} 
+                        {% if output_modes.pump %}
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#waterPumpTimeModal">
                             Set Pump Times
                         </button>                    
@@ -423,8 +411,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Garden Valve:</p>
                     <p class="lead" id="garden_valve_status" style="font-size: xx-large;"><strong>{% if garden_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="garden_valve" output_auto=output_modes.garden_valve %}
                     {% if user.is_superuser %}
-                        {% if automatic %}
+                        {% if output_modes.garden_valve %}
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#gardenValveTimeModal">
                             Set Valve Times
                         </button>
@@ -484,8 +473,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Greenhouse Planter Valve: </p>
                     <p class="lead" id="greenhouse_planter_valve_status" style="font-size: xx-large;"><strong>{% if greenhouse_planter_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="greenhouse_planter_valve" output_auto=output_modes.greenhouse_planter_valve %}
                     {% if user.is_superuser %}
-                        {% if automatic %}
+                        {% if output_modes.greenhouse_planter_valve %}
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhousePlanterValveTimeModal">
                             Set Valve Times
                         </button>
@@ -545,8 +535,9 @@
                 <div class="card" style="padding: 2px;">
                     <p class="lead">Greenhouse Tree Valve: </p>
                     <p class="lead" id="greenhouse_tree_valve_status" style="font-size: xx-large;"><strong>{% if greenhouse_tree_valve_status %} OPEN {% else %} CLOSED {% endif %}</strong></p>
+                    {% include "automated_greenhouse/output_mode.html" with output_name="greenhouse_tree_valve" output_auto=output_modes.greenhouse_tree_valve %}
                     {% if user.is_superuser %}
-                        {% if automatic %}
+                        {% if output_modes.greenhouse_tree_valve %}
                         <button type="button" id="greenhouse_tree_valve_time_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#greenhouseTreeValveTimeModal">
                             Set Valve Times
                         </button>
@@ -821,28 +812,12 @@
             .then(response => response.json())
             .then(data=> {
                     
-                    if (document.getElementById("nursery_heater_button")){
-                        document.getElementById("nursery_heater_button").innerHTML = BUTTON_DICT[data.nursery_heater_status]
-                        document.getElementById("water_heater_button").innerHTML = BUTTON_DICT[data.water_heater_status]
-                        document.getElementById("fan_button").innerHTML = BUTTON_DICT[data.fan_status]
-                        document.getElementById("vent_button").innerHTML = BUTTON_DICT[data.vent_status]
-                    }                 
-                    document.getElementById("nursery_heater_status").innerHTML = '<strong>' + data.nursery_heater_status + '</strong>'
-                    document.getElementById("water_heater_status").innerHTML = '<strong>' + data.water_heater_status + '</strong>'
-                    document.getElementById("fan_status").innerHTML = '<strong>' + data.fan_status + '</strong>'                    
-                    document.getElementById("vent_status").innerHTML = '<strong>' + data.vent_status + '</strong>'  
-                    
-                    if (document.getElementById("water_pump_button")){
-                        document.getElementById("water_pump_button").innerHTML = BUTTON_DICT[data.water_pump_status]
-                        document.getElementById("garden_valve_button").innerHTML = BUTTON_DICT[data.garden_valve_status]
-                        document.getElementById("greenhouse_tree_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_tree_valve_status]
-                        document.getElementById("greenhouse_planter_valve_button").innerHTML = BUTTON_DICT[data.greenhouse_planter_valve_status]
-
+                    for (const [key, state] of Object.entries(data)) {
+                        const label = document.getElementById(key);
+                        if (label) label.textContent = state;
+                        const button = document.getElementById(key.replace(/_status$/, '_button'));
+                        if (button) button.textContent = BUTTON_DICT[state];
                     }
-                    document.getElementById("water_pump_status").innerHTML = '<strong>' + data.water_pump_status + '</strong>'
-                    document.getElementById("garden_valve_status").innerHTML = '<strong>' + data.garden_valve_status + '</strong>'
-                    document.getElementById("greenhouse_planter_valve_status").innerHTML = '<strong>' + data.greenhouse_planter_valve_status + '</strong>'
-                    document.getElementById("greenhouse_tree_valve_status").innerHTML = '<strong>' + data.greenhouse_tree_valve_status + '</strong>'                       
                 })
         }
         
@@ -851,24 +826,12 @@
         function update_system_status(){
             fetch('/api/api_get_system_status')
             .then(response => response.json())
-            .then( data =>{
-                //the system status should rarely change, all other superusers should be alerted if they are logged in
-                
-                if ('{{user.is_superuser}}' == 'True'){
-                    if (document.getElementById("system_status").innerHTML == "System Status: Automatic" && data.system_status != 'Automatic'){
-                        alert("Someone has changed the system status.")
-                        window.location.href = window.location.href;
-                    }
-                    if (document.getElementById("system_status").innerHTML == "System Status: Manual" && data.system_status != 'Manual'){
-                        alert("Someone has changed the system status.")
-                        window.location.href = window.location.href;
-                    }                       
-                }  
-                else{
-                    document.getElementById("system_status").innerHTML = "System Status: " + data.system_status
-                }  
-            }
-            )
+            .then(data => {
+                if (data.mode_signature !== '{{ mode_signature }}') {
+                    window.location.reload();
+                }
+                document.getElementById('system_status').textContent = 'System Status: ' + data.system_status;
+            });
         }
 
     </script>

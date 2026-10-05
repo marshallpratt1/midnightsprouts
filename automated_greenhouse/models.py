@@ -214,3 +214,25 @@ class GreenhouseTreeValveStatus(models.Model):
             if previous.greenhouse_tree_valve_open and not self.greenhouse_tree_valve_open:
                 return f"Closed: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
         return f"Greenhouse Tree valve status object created: {(self.created_at + timedelta(hours=AKDT_OFFSET)).strftime('%B %d, %Y at: %X')}"
+
+class OutputControl(models.Model):
+    """Persistent operator mode, independent of output history."""
+    name = models.CharField(max_length=40, primary_key=True)
+    automatic = models.BooleanField(default=True)
+
+
+class SensorHealth(models.Model):
+    name = models.CharField(max_length=40, primary_key=True)
+    monitoring_since = models.DateTimeField(default=timezone.now)
+    last_valid = models.DateTimeField(null=True, blank=True)
+    last_value = models.FloatField(null=True, blank=True)
+    fault_queued = models.BooleanField(default=False)
+
+
+class AlertNotification(models.Model):
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    next_attempt = models.DateTimeField(default=timezone.now)
+    attempts = models.PositiveIntegerField(default=0)
