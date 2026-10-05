@@ -1,0 +1,10 @@
+<p>Mode: <strong>{% if output_auto %}AUTO{% else %}MANUAL{% endif %}</strong></p>
+{% if user.is_superuser %}
+<form method="post" action="{% url 'index' %}">
+    {% csrf_token %}
+    <input type="hidden" name="output" value="{{ output_name }}">
+    <button class="btn btn-secondary" name="set_mode" value="{% if output_auto %}manual{% else %}auto{% endif %}">
+        Switch to {% if output_auto %}MANUAL{% else %}AUTO{% endif %}
+    </button>
+</form>
+{% endif %}

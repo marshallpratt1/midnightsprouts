@@ -49,8 +49,8 @@ class PumpForm(forms.Form):
 class PumpTimeForm(forms.Form):
     pump_start_hour = forms.IntegerField(label='Start time, hour (24hr time):', min_value=0, max_value=23)
     start_minute = forms.IntegerField(label=mark_safe('Start time, minute:'), min_value=0, max_value=59)
-    duration = forms.IntegerField(label=mark_safe('Duration in minutes:'), min_value=0)
-    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=0)
+    duration = forms.IntegerField(label=mark_safe('Duration in minutes:'), min_value=0, max_value=1440)
+    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=1, max_value=365)
 
     def __init__(self, *args, **kwargs):
         kwargs.update(initial = {
@@ -67,8 +67,8 @@ class GardenValveForm(forms.Form):
 class GardenValveTimeForm(forms.Form):
     garden_start_hour = forms.IntegerField(label='Start time, hour (24hr time):', min_value=0, max_value=23)
     start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
-    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
-    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=0)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0, max_value=1440)
+    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=1, max_value=365)
 
     def __init__(self, *args, **kwargs):
         kwargs.update(initial = {
@@ -85,8 +85,8 @@ class GreenhousePlanterValveForm(forms.Form):
 class GreenhousePlanterValveTimeForm(forms.Form):
     planter_start_hour = forms.IntegerField(label='Start time, hour (24hr time):', min_value=0, max_value=23)
     start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
-    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
-    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=0)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0, max_value=1440)
+    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=1, max_value=365)
 
     def __init__(self, *args, **kwargs):
         kwargs.update(initial = {
@@ -103,8 +103,8 @@ class GreenhouseTreeValveForm(forms.Form):
 class GreenhouseTreeValveTimeForm(forms.Form):
     tree_start_hour = forms.IntegerField(label='Start time, hour (24hr time):', min_value=0, max_value=23)
     start_minute = forms.IntegerField(label='Start time, minute:', min_value=0, max_value=59)
-    duration = forms.IntegerField(label='Duration in minutes:', min_value=0)
-    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=0)
+    duration = forms.IntegerField(label='Duration in minutes:', min_value=0, max_value=1440)
+    frequency = forms.IntegerField(label=mark_safe('Repeat every __ days:'), min_value=1, max_value=365)
 
     def __init__(self, *args, **kwargs):
         kwargs.update(initial = {
